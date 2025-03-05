@@ -23,10 +23,33 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Tue, 04 Mar 2025 08:17:29 &#43;0800</lastBuildDate>
+        <lastBuildDate>Wed, 05 Mar 2025 08:26:57 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://nnnut-Zhou.github.io/rss.xml" />
         
+        
+            <item>
+                <title>test3</title>
+                <link>https://nnnut-Zhou.github.io/posts/test3/</link>
+                <guid isPermaLink="true">https://nnnut-Zhou.github.io/posts/test3/</guid>
+                <pubDate>Wed, 05 Mar 2025 08:26:23 &#43;0800</pubDate>
+                
+                    <author>reuixiy@gmail.com (reuixiy)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+                <description></description>
+                
+                
+                
+                
+                
+                    
+                        
+                    
+                        
+                    
+                
+            </item>
         
             <item>
                 <title>test2</title>
