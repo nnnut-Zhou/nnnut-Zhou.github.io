@@ -7,9 +7,9 @@
 
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>Hugo 主题 MemE</title>
+        <title>糖炒栗子</title>
         <link>https://nnnut-Zhou.github.io/</link>
-        <description>MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</description>
+        <description>积跬步以至千里，积小流以成江海</description>
         <generator>Hugo 0.145.0 https://gohugo.io/</generator>
         
             <language>zh-CN</language>
@@ -23,58 +23,10 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Wed, 05 Mar 2025 00:41:27 &#43;0000</lastBuildDate>
+        <lastBuildDate>Wed, 05 Mar 2025 16:48:54 &#43;0000</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://nnnut-Zhou.github.io/rss.xml" />
         
-        
-            <item>
-                <title>test3</title>
-                <link>https://nnnut-Zhou.github.io/posts/test3/</link>
-                <guid isPermaLink="true">https://nnnut-Zhou.github.io/posts/test3/</guid>
-                <pubDate>Wed, 05 Mar 2025 08:26:23 &#43;0800</pubDate>
-                
-                    <author>reuixiy@gmail.com (reuixiy)</author>
-                
-                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
-                <description>&lt;p&gt;here is a new line 2222&lt;/p&gt;
-</description>
-                
-                
-                
-                
-                
-                    
-                        
-                    
-                        
-                    
-                
-            </item>
-        
-            <item>
-                <title>test2</title>
-                <link>https://nnnut-Zhou.github.io/posts/test2/</link>
-                <guid isPermaLink="true">https://nnnut-Zhou.github.io/posts/test2/</guid>
-                <pubDate>Tue, 04 Mar 2025 08:15:38 &#43;0800</pubDate>
-                
-                    <author>reuixiy@gmail.com (reuixiy)</author>
-                
-                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
-                <description>&lt;p&gt;ssssssssssssss&lt;/p&gt;
-</description>
-                
-                
-                
-                
-                
-                    
-                        
-                    
-                        
-                    
-                
-            </item>
         
             <item>
                 <title>Test</title>
