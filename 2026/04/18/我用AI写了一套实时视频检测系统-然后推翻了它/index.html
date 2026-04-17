@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>我用AI写了一套实时视频检测系统,然后推翻了它 | Lee的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="背景我在做一个实时直播流 AI 检测系统：从 SRS 流媒体服务器拉取直播视频，交给 Python 端的 AI 模型做目标检测，再把检测结果（比如人物位置的边界框）同步叠加到前端播放画面上。 核心难题只有一个：怎么让检测结果和视频画面对齐。 V1：一个”优雅”的方案我选择了 H.264 SEI（Supplemental Enhancement Information）。这是视频编码标准中专门用来携">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我用AI写了一套实时视频检测系统,然后推翻了它">
+<meta property="og:url" content="https://nnnut-zhou.github.io/2026/04/18/%E6%88%91%E7%94%A8AI%E5%86%99%E4%BA%86%E4%B8%80%E5%A5%97%E5%AE%9E%E6%97%B6%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-%E7%84%B6%E5%90%8E%E6%8E%A8%E7%BF%BB%E4%BA%86%E5%AE%83/index.html">
+<meta property="og:site_name" content="Lee的博客">
+<meta property="og:description" content="背景我在做一个实时直播流 AI 检测系统：从 SRS 流媒体服务器拉取直播视频，交给 Python 端的 AI 模型做目标检测，再把检测结果（比如人物位置的边界框）同步叠加到前端播放画面上。 核心难题只有一个：怎么让检测结果和视频画面对齐。 V1：一个”优雅”的方案我选择了 H.264 SEI（Supplemental Enhancement Information）。这是视频编码标准中专门用来携">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-17T18:35:14.000Z">
+<meta property="article:modified_time" content="2026-04-17T18:35:49.332Z">
+<meta property="article:author" content="Lee Chou">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Lee的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Lee的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://nnnut-Zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-我用AI写了一套实时视频检测系统-然后推翻了它" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/04/18/%E6%88%91%E7%94%A8AI%E5%86%99%E4%BA%86%E4%B8%80%E5%A5%97%E5%AE%9E%E6%97%B6%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-%E7%84%B6%E5%90%8E%E6%8E%A8%E7%BF%BB%E4%BA%86%E5%AE%83/" class="article-date">
+  <time class="dt-published" datetime="2026-04-17T18:35:14.000Z" itemprop="datePublished">2026-04-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      我用AI写了一套实时视频检测系统,然后推翻了它
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我在做一个实时直播流 AI 检测系统：从 SRS 流媒体服务器拉取直播视频，交给 Python 端的 AI 模型做目标检测，再把检测结果（比如人物位置的边界框）同步叠加到前端播放画面上。</p>
+<p>核心难题只有一个：<strong>怎么让检测结果和视频画面对齐</strong>。</p>
+<h2 id="V1：一个”优雅”的方案"><a href="#V1：一个”优雅”的方案" class="headerlink" title="V1：一个”优雅”的方案"></a>V1：一个”优雅”的方案</h2><p>我选择了 H.264 SEI（Supplemental Enhancement Information）。这是视频编码标准中专门用来携带附加数据的机制——把 AI 检测结果直接塞进视频帧的码流里，数据和画面在物理层面绑定，天然同步，不可能错位。</p>
+<p>听起来很完美。但要实现它，得先理解 WebRTC 送过来的视频数据长什么样。</p>
+<h3 id="为什么实现-SEI-这么复杂"><a href="#为什么实现-SEI-这么复杂" class="headerlink" title="为什么实现 SEI 这么复杂"></a>为什么实现 SEI 这么复杂</h3><p>WebRTC 传输视频时，底层走的是 RTP 协议。一个视频帧不会完整地送过来——它会被拆成一堆 <strong>RTP 包</strong>。这些包到达时可能乱序、可能丢失，你需要按序号重组。</p>
+<p>重组之后拿到的也不是”一帧画面”，而是 H.264 的 <strong>NALU</strong>（Network Abstraction Layer Unit）。一个 RTP 包可能包含一个完整 NALU，也可能包含多个小 NALU（STAP-A 聚合包），也可能只是一个大 NALU 的一个分片（FU-A 分片包）。你需要处理所有这些情况才能拿到完整的 NALU。</p>
+<p>而 NALU 本身也有不同类型：SPS（序列参数集）、PPS（图像参数集）、IDR（关键帧）、非 IDR Slice（普通帧）……SEI 需要被插入到正确的位置——SPS&#x2F;PPS 之后、Slice 之前——而且必须是 Annex-B 格式（以 <code>00 00 00 01</code> 起始码分隔），还要符合 <code>user_data_unregistered</code> 规范（16 字节 UUID 前缀 + payload）。</p>
+<p><strong>这些概念——RTP 分包、NALU 类型、Annex-B 格式、SEI 编码规范——是实现 V1 方案的前置知识。</strong> 为了搞清楚这些，我查了大量 H.264 和 WebRTC 的资料。</p>
+<p>理解了这些之后，架构变成了这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SRS → WebRTC 拉流 → Go(pion 解包组帧) → FFmpeg 解码成 JPEG</span><br><span class="line">  → NATS 发给 Python → AI 推理 → 结果写入 SEI → 重排序 → FFmpeg 推回 SRS</span><br></pre></td></tr></table></figure>
+
+<p>技术栈：Go + pion&#x2F;webrtc + FFmpeg(×2) + NATS + Python。为了让它跑起来，我写了：</p>
+<ul>
+<li><strong>RTP 解包与 H.264 组帧</strong>：用 pion 从 WebRTC 连接中拉取 RTP 包，处理 STAP-A&#x2F;FU-A 等封包格式，重组成完整的 Annex-B 格式 H.264 帧</li>
+<li><strong>双 FFmpeg 管道</strong>：一个负责把 H.264 解码缩放成 JPEG 供 AI 推理，另一个负责把带 SEI 的 H.264 重新封装推回 SRS</li>
+<li><strong>NATS 多模型扇出</strong>：支持同时调用多个 AI 模型，并行 request-reply，动态超时</li>
+<li><strong>15 Worker 并发池 + 重排序缓冲</strong>：并发处理帧以提高吞吐，再按帧序号重新排列保证输出有序</li>
+<li><strong>动态超时机制</strong>：每帧的 NATS 超时 &#x3D; 缓冲上限 - 已消耗时间 - 安全余量，推理时间不够就丢弃结果保证流不卡</li>
+</ul>
+<p>代码量 500+ 行，Go 端单独就 8 个文件。用 640×360 30fps 的测试流验证，系统完整跑通，SEI 正确嵌入，前端播放器能实时解析并画框。</p>
+<h2 id="问题出现"><a href="#问题出现" class="headerlink" title="问题出现"></a>问题出现</h2><p>当我把测试流换成 1920×1080 时，输出视频开始卡顿。</p>
+<p>我的第一反应是做局部优化——分析 1080p 下的内存占用、GC 压力、SEI 扫描性能，列出 P0-P4 的优化清单。但优化完一轮后，卡顿依然存在。</p>
+<p>这时候我停下来问了一个问题：<strong>如果从需求本身重新推导，当前的架构是不是一开始就走偏了？</strong></p>
+<h2 id="拆解发现"><a href="#拆解发现" class="headerlink" title="拆解发现"></a>拆解发现</h2><p>回到需求：把 AI 检测结果同步显示在直播画面上。</p>
+<p>为了实现”同步”，我选了 SEI。但 SEI 要求修改 H.264 码流。修改码流要求拿到裸 NALU。拿裸 NALU 要求解封装。解封装后还得重新封装推回去。而且推回去的流必须是连续的、时间戳正确的。</p>
+<p><strong>每一步都是上一步的连锁后果。</strong></p>
+<p>更致命的是拉流协议的选择。我用了 WebRTC（WHEP）来从 SRS 拉流。WebRTC 基于 UDP，是为实时交互设计的——可以丢包、可以乱序、不保证每帧完整。但我的管道下游是 RTMP 推流，它需要一个<strong>连续、完整、时间戳准确的 H.264 码流</strong>。</p>
+<p>于是出现了根本矛盾：<strong>用一个有损的实时协议拉流，处理后喂给一个需要无损输入的推流协议。</strong></p>
+<p>我写的那 200 多行 handler.go——worker pool、reorder buffer、动态超时——本质上都是在弥合这个矛盾。重排序缓冲靠墙钟等待来决定是否跳帧，这个机制天然引入抖动。原始流的时间戳在 WebRTC 传输后丢失，FFmpeg 只能靠帧到达间隔猜帧率。</p>
+<p><strong>卡顿不是某个 buffer 太小，而是架构本身在制造卡顿。</strong></p>
+<h2 id="退一步看全局"><a href="#退一步看全局" class="headerlink" title="退一步看全局"></a>退一步看全局</h2><p>跳出 SEI 方案，重新审视”把结果和帧对齐”这个需求，所有方案可以分成两类：</p>
+<p><strong>同路</strong>：结果和视频物理上走同一条路，不可分离。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>做法</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>烧录进画面</td>
+<td>服务端解码→画框→重编码→推流</td>
+<td>重编码吃资源，框不可交互</td>
+</tr>
+<tr>
+<td>SEI 嵌入</td>
+<td>修改 H.264 码流</td>
+<td>工程复杂度高，当前方案的问题</td>
+</tr>
+<tr>
+<td>推送图片</td>
+<td>JPEG over WebSocket，替代视频流</td>
+<td>带宽高，画面不流畅</td>
+</tr>
+</tbody></table>
+<p><strong>旁路</strong>：结果走独立信道，前端做同步匹配。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>离视频的距离</th>
+<th>同步精度</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FLV script tag</td>
+<td>近（同一容器）</td>
+<td>高（容器时间戳）</td>
+<td>锁定 HTTP-FLV，延迟 1-3 秒</td>
+</tr>
+<tr>
+<td>WebRTC DataChannel</td>
+<td>中（同一连接）</td>
+<td>中</td>
+<td>SRS 不原生支持，开发量大</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>远（独立连接）</td>
+<td>低</td>
+<td>两条连接可能漂移</td>
+</tr>
+<tr>
+<td>SSE</td>
+<td>远（独立连接）</td>
+<td>低</td>
+<td>同 WebSocket，但更简单</td>
+</tr>
+</tbody></table>
+<p>旁路方案的核心顾虑是”同步精度不够”。但仔细想想：</p>
+<ul>
+<li>AI 推理本身需要 100-300ms，每秒只能产出 3-10 个结果</li>
+<li>前端直接用”最新一次推理结果”画框</li>
+<li>偏差最多 1-2 帧（33-66ms），人眼不可感知</li>
+<li>推理频率本身就远低于视频帧率，精确到帧的绑定是<strong>过度要求</strong></li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>最终方案：<strong>视频原样走 WebRTC 播放，检测结果走 WebSocket 旁路推送。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">原始流 → SRS → WebRTC → 前端播放（不改流）</span><br><span class="line">原始流 → 截帧 → Python 推理 → WebSocket → 前端 Canvas 画框</span><br></pre></td></tr></table></figure>
+
+<p>不需要改码流，不需要双 FFmpeg，不需要 reorder buffer，不需要 pion 组帧。卡顿问题从根源消失，因为<strong>原始流从未被修改过</strong>。</p>
+<h2 id="教训：和-AI-协作时，什么时候该踩刹车"><a href="#教训：和-AI-协作时，什么时候该踩刹车" class="headerlink" title="教训：和 AI 协作时，什么时候该踩刹车"></a>教训：和 AI 协作时，什么时候该踩刹车</h2><p>这个项目全程有 AI 参与。在我提出”输出视频卡顿”时，AI 做了详细的性能分析——内存估算、GC 影响、管道吞吐量——然后给出了一长串优化建议。这些分析<strong>在局部上是合理的</strong>（虽然有些细节算错了），但它们共同的盲区是：<strong>默认当前架构是对的，只需要优化。</strong></p>
+<p>直到我明确要求”从需求本身重新分析，看看是不是一开始就走偏了”，AI 才跳出局部优化的框架，开始质疑 SEI 方案本身的必要性。</p>
+<p>这暴露了一个 AI 协作中的模式问题：</p>
+<h3 id="什么时候该意识到需要重新审视"><a href="#什么时候该意识到需要重新审视" class="headerlink" title="什么时候该意识到需要重新审视"></a>什么时候该意识到需要重新审视</h3><ul>
+<li><strong>优化了一轮但问题还在</strong>——如果局部修复没用，问题可能不在局部</li>
+<li><strong>解释一个设计决策时，需要讲很长的”因为所以”链</strong>——因为用了 SEI → 所以需要改码流 → 所以需要拉流解封装 → 所以需要 WebRTC… 连锁越长，初始假设的杠杆越大</li>
+<li><strong>发现自己在写大量的”对抗性”代码</strong>——reorder buffer 对抗乱序，动态超时对抗延迟耦合，残帧检测对抗丢包。如果代码主要在解决架构自身制造的问题，架构可能就是问题</li>
+<li><strong>AI 给出的优化建议越来越精细，但收益越来越边际</strong>——说明已经在局部最优附近打转了</li>
+</ul>
+<h3 id="怎么提示-AI-退后一步"><a href="#怎么提示-AI-退后一步" class="headerlink" title="怎么提示 AI 退后一步"></a>怎么提示 AI 退后一步</h3><p>当你意识到可能走偏了，不要问”这个 bug 怎么修”或”这段代码怎么优化”。试试这些方向：</p>
+<blockquote>
+<p>“不要看代码实现，从需求本身重新推导，当前方案是不是最合理的路径？”</p>
+</blockquote>
+<blockquote>
+<p>“如果我们从零开始设计，已知目标是 X，有哪些根本不同的方案？各自的 trade-off 是什么？”</p>
+</blockquote>
+<blockquote>
+<p>“当前架构中，哪些复杂度是需求本身要求的，哪些是我们的设计选择制造的？”</p>
+</blockquote>
+<blockquote>
+<p>“假设一个资深工程师刚加入项目，看到这套架构，他会问什么问题？”</p>
+</blockquote>
+<p>关键是<strong>把 AI 从”优化当前实现”模式切换到”质疑当前假设”模式</strong>。AI 默认会尊重你已有的代码和架构——这通常是对的，但在需要根本性反思时，你必须明确告诉它：<strong>退后一步看。</strong></p>
+<p>这可能是 AI 协作中最反直觉的一点：AI 最擅长在给定框架内做精细工作，但<strong>质疑框架本身</strong>这件事，目前还是得由人来发起。</p>
+<h2 id="更深一层：陌生领域怎么避免一开始就选错"><a href="#更深一层：陌生领域怎么避免一开始就选错" class="headerlink" title="更深一层：陌生领域怎么避免一开始就选错"></a>更深一层：陌生领域怎么避免一开始就选错</h2><p>AI 协作的教训说的是”走偏了怎么纠正”。但还有一个更根本的问题：<strong>面对不熟悉的领域，有没有策略能一开始就选对方向？还是说必须得碰过钉子？</strong></p>
+<p>答案是：两者都需要，但比例不是你想的那样。</p>
+<h3 id="逻辑能覆盖的部分"><a href="#逻辑能覆盖的部分" class="headerlink" title="逻辑能覆盖的部分"></a>逻辑能覆盖的部分</h3><p>面对陌生领域，有一个策略确实有用：<strong>在动手之前，把”既要又要”列表写出来，然后找矛盾。</strong></p>
+<p>这个项目的需求列表：</p>
+<ul>
+<li>检测结果要和帧同步</li>
+<li>延迟要低</li>
+<li>前端要方便提取展示</li>
+<li>后端要方便处理</li>
+</ul>
+<p>这些单独看都合理。但如果当时追问一句——“同步精度到底要多高？”——答案会是”AI 每秒只出 3-10 个结果，精确到帧没有意义”。<strong>这一条一旦松动，SEI 方案的前提就不成立了，后面的复杂度全部不需要。</strong></p>
+<p>问题在于：当时我不知道该追问这一句。因为我还不了解 AI 推理的实际吞吐量，也不了解人眼对同步偏差的感知阈值。<strong>你需要知道什么才能做出正确决策，这件事本身需要经验。</strong></p>
+<h3 id="逻辑覆盖不了的部分"><a href="#逻辑覆盖不了的部分" class="headerlink" title="逻辑覆盖不了的部分"></a>逻辑覆盖不了的部分</h3><p>SEI 方案在技术上是成立的——H.264 规范就是支持这么做。如果你去搜”视频流附加自定义数据”，SEI 大概率是排名最高的答案。它在概念层面优雅、正确、标准。</p>
+<p><strong>你没法靠纯逻辑推导出”这条路走下去工程代价会爆炸”。</strong> 因为代价藏在实现细节里——RTP 分包重组、Annex-B 格式、时间戳管理、reorder buffer——这些东西只有做了才知道有多重。你读 H.264 规范的时候不会看到一行字说”注意：如果你用 WebRTC 拉流再改码流推回去，会非常痛苦”。</p>
+<p>这就是经验的价值：<strong>不是告诉你正确答案，而是告诉你哪些看起来可行的路径走下去会很疼。</strong></p>
+<h3 id="一个折中策略：先做最小验证，晚做架构决策"><a href="#一个折中策略：先做最小验证，晚做架构决策" class="headerlink" title="一个折中策略：先做最小验证，晚做架构决策"></a>一个折中策略：先做最小验证，晚做架构决策</h3><p>虽然经验无法完全替代，但有一个做法能降低踩坑的代价。</p>
+<p>回到这个项目。如果当时不急着选 SEI，而是先花半天时间：</p>
+<ol>
+<li>用 FFmpeg 截几帧图发给 Python，确认推理延迟是 100-300ms</li>
+<li>在前端手动模拟：视频播着，<code>setTimeout</code> 延迟 100ms 画个框，看看效果能不能接受</li>
+<li>能接受 → WebSocket 旁路就够了，不需要碰码流</li>
+<li>不能接受 → 再考虑 SEI</li>
+</ol>
+<p><strong>这个验证不需要任何 H.264 知识，不需要 Go，不需要 pion，不需要 NATS。</strong> 半天就能做完，而且做完之后对”同步精度到底要多高”这个关键问题就有了体感，后面的技术选型自然会不同。</p>
+<p>踩钉子不可避免，但可以控制钉子的大小。<strong>先用最小成本验证最大的假设——这条不需要经验，靠逻辑就能做到。</strong></p>
+<h3 id="定性需求-vs-定量需求"><a href="#定性需求-vs-定量需求" class="headerlink" title="定性需求 vs 定量需求"></a>定性需求 vs 定量需求</h3><p>经验的作用不是直接告诉你选什么方案，而是告诉你<strong>在决策之前该去摸清哪些数字</strong>。</p>
+<p>没经验的时候，你看到”结果要和帧同步”，会把它当成一个定性需求，然后去找技术上最”正确”的同步方案——SEI。</p>
+<p>有经验的话，你会先把它转成定量问题：同步偏差多少毫秒可以接受？然后去量：推理多快、人眼阈值多少、帧间隔多少。数字一出来，方案自然收窄。</p>
+<p><strong>定性需求导向”最正确”的方案，定量需求导向”够用”的方案。</strong> 前者容易过度工程化，后者才是工程决策的正常姿势。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://nnnut-zhou.github.io/2026/04/18/%E6%88%91%E7%94%A8AI%E5%86%99%E4%BA%86%E4%B8%80%E5%A5%97%E5%AE%9E%E6%97%B6%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-%E7%84%B6%E5%90%8E%E6%8E%A8%E7%BF%BB%E4%BA%86%E5%AE%83/" data-id="cuidcmUDbJt3O1XYFS5uEsuE-" data-title="我用AI写了一套实时视频检测系统,然后推翻了它" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/04/18/%E5%88%86%E4%BA%AB-%E6%8A%80%E6%9C%AF%E4%BA%A7%E5%93%81%E5%8C%96-%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A%E5%8C%96/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">[分享] 技术产品化-产品商业化</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/04/18/%E6%88%91%E7%94%A8AI%E5%86%99%E4%BA%86%E4%B8%80%E5%A5%97%E5%AE%9E%E6%97%B6%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-%E7%84%B6%E5%90%8E%E6%8E%A8%E7%BF%BB%E4%BA%86%E5%AE%83/">我用AI写了一套实时视频检测系统,然后推翻了它</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/%E5%88%86%E4%BA%AB-%E6%8A%80%E6%9C%AF%E4%BA%A7%E5%93%81%E5%8C%96-%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A%E5%8C%96/">[分享] 技术产品化-产品商业化</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/Ceres%E6%B1%82%E8%A7%A3%E5%BA%93%E7%94%A8%E6%B3%95%E7%AE%80%E6%9E%90/">Ceres求解库用法简析</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/%E8%AE%B0%E5%BD%95-Colmap%E6%BA%90%E7%A0%81-%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97/">[记录] Colmap源码-前端模块</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 Lee Chou<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
