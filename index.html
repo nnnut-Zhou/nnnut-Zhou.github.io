@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Lee的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Lee的博客">
+<meta property="og:url" content="https://nnnut-zhou.github.io/index.html">
+<meta property="og:site_name" content="Lee的博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Lee Chou">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Lee的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Lee的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://nnnut-Zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Ceres求解库用法简析" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/04/18/Ceres%E6%B1%82%E8%A7%A3%E5%BA%93%E7%94%A8%E6%B3%95%E7%AE%80%E6%9E%90/" class="article-date">
+  <time class="dt-published" datetime="2026-04-17T17:02:13.000Z" itemprop="datePublished">2026-04-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/04/18/Ceres%E6%B1%82%E8%A7%A3%E5%BA%93%E7%94%A8%E6%B3%95%E7%AE%80%E6%9E%90/">Ceres求解库用法简析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>ceres是C++常用的最小二乘问题求解库，最近研究colmap代码，顺便学习一下</p>
+<p>下面举两个简单例子来说明：</p>
+<h2 id="问题一：一维优化，让x收敛到0"><a href="#问题一：一维优化，让x收敛到0" class="headerlink" title="问题一：一维优化，让x收敛到0"></a>问题一：一维优化，让x收敛到0</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义代价函数，结构体、类均可，只需重载operator()</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">CostFunctor</span> &#123;</span><br><span class="line">      <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> T* <span class="type">const</span> x, T* residual)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">            residual[<span class="number">0</span>] = <span class="built_in">T</span>(<span class="number">10.0</span>) - x[<span class="number">0</span>];</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">      <span class="comment">// 初始值</span></span><br><span class="line">      <span class="type">double</span> x = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line">      ceres::Problem problem;</span><br><span class="line">      <span class="comment">// 使用AutoDiff包装代价函数</span></span><br><span class="line">      <span class="comment">// 残差维度(即residual数组大小)为1</span></span><br><span class="line">      <span class="comment">// 参数块维度(即传给AddResidualBlock最后一项的x，也就是待优化项的大小)为1</span></span><br><span class="line">      <span class="comment">// nullptr处为核函数，决定如何处理离群点，传入空表示信任所有观测数据</span></span><br><span class="line">      problem.<span class="built_in">AddResidualBlock</span>(</span><br><span class="line">            <span class="keyword">new</span> ceres::<span class="built_in">AutoDiffCostFunction</span>&lt;CostFunctor, <span class="number">1</span>, <span class="number">1</span>&gt;(<span class="keyword">new</span> CostFunctor),</span><br><span class="line">            <span class="literal">nullptr</span>, &amp;x</span><br><span class="line">      );</span><br><span class="line">      <span class="comment">// 配置求解器</span></span><br><span class="line">      <span class="comment">// 这里使用DENSE_QR，对于小规模问题表现良好</span></span><br><span class="line">      <span class="comment">// colmap中使用舒尔补类型SCHUR应对视觉测量的稀疏特点，并会根据照片规模决定求解器：</span></span><br><span class="line">      <span class="comment">// 50张以下，使用DENSE_SCHUR</span></span><br><span class="line">      <span class="comment">// 1000张以下且支持稀疏计算，则使用SPARSE_SCHUR</span></span><br><span class="line">      <span class="comment">// 其他情况使用ITERATIVE_SCHUR，并使用预处理器SCHUR_JACOBI缩放问题</span></span><br><span class="line">      <span class="comment">// 以上详见bundle_adjustment.cc</span></span><br><span class="line">      ceres::Solver::Options options;</span><br><span class="line">      options.linear_solver_type = ceres::DENSE_QR;</span><br><span class="line">      options.minimizer_progress_to_stdout = <span class="literal">true</span>; <span class="comment">// 打印迭代情况</span></span><br><span class="line"></span><br><span class="line">      ceres::Solver::Summary summary;</span><br><span class="line">      ceres::<span class="built_in">Solver</span>(options, &amp;problem, &amp;summary);</span><br><span class="line"></span><br><span class="line">      std::cout &lt;&lt; summary.<span class="built_in">BriefReport</span>() &lt;&lt; std::endl;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;Final x: &quot;</span> &lt;&lt; x &lt;&lt; std::endl;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题二：曲线拟合y-e-ax-b-，优化a、b"><a href="#问题二：曲线拟合y-e-ax-b-，优化a、b" class="headerlink" title="问题二：曲线拟合y&#x3D;e^{ax+b}，优化a、b"></a>问题二：曲线拟合y&#x3D;e^{ax+b}，优化a、b</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">CostFunctor</span> &#123;</span><br><span class="line">      <span class="built_in">CostFunctor</span>(<span class="type">double</span> x, <span class="type">double</span> y) : <span class="built_in">x_</span>(x), <span class="built_in">y_</span>(y) &#123;&#125;</span><br><span class="line">      <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> T* <span class="type">const</span> ab, T* residual)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">            residual[<span class="number">0</span>] = y_ - <span class="built_in">exp</span>(ab[<span class="number">0</span>] * x_ + ab[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="type">double</span> x_, y_;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">      <span class="type">double</span> ab[<span class="number">2</span>] = &#123;<span class="number">0.0</span>, <span class="number">0.0</span>&#125;;</span><br><span class="line">      ceres::Problem problem;</span><br><span class="line">      <span class="comment">// x_data和y_data是事先生成好的一组观测值</span></span><br><span class="line">      <span class="comment">// 对于每个观测值，增加一个约束（让ab对应的曲线去满足每一个点）</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> <span class="number">1</span> = <span class="number">0</span>; i &lt; x_data.<span class="built_in">size</span>(); ++i)&#123;</span><br><span class="line">            problem.<span class="built_in">AddResidualBlock</span>(</span><br><span class="line">                  <span class="keyword">new</span> ceres::<span class="built_in">AutoDiffCostFunction</span>&lt;CostFunctor, <span class="number">1</span>, <span class="number">2</span>&gt;(</span><br><span class="line">                        <span class="keyword">new</span> <span class="built_in">CostFunctor</span>(x_data[i], y_data[i])</span><br><span class="line">                  ),</span><br><span class="line">                  <span class="literal">nullptr</span>, ab</span><br><span class="line">            );</span><br><span class="line">      &#125;</span><br><span class="line">      ceres::Solver::Options options;</span><br><span class="line">      options.linear_solver_type = ceres::DENSE_QR;</span><br><span class="line">      options.minimizer_progress_to_stdout = <span class="literal">true</span>;</span><br><span class="line">      ceres::Solver::Summary summary;</span><br><span class="line">      ceres::<span class="built_in">Solver</span>(options, &amp;problem, &amp;summary);</span><br><span class="line">      std::cout &lt;&lt; summary.<span class="built_in">BriefReport</span>() &lt;&lt; std::endl;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;Final a, b: &quot;</span> &lt;&lt; ab[<span class="number">0</span>] &lt;&lt; <span class="string">&quot;, &quot;</span> &lt;&lt; ab[<span class="number">1</span>] &lt;&lt; std::endl;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还有其他一些使用技巧，例如核函数、给problem设置固定参数和上下界，这里就不赘述了</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://nnnut-zhou.github.io/2026/04/18/Ceres%E6%B1%82%E8%A7%A3%E5%BA%93%E7%94%A8%E6%B3%95%E7%AE%80%E6%9E%90/" data-id="cuidhoFWs1xg54xoPXdnyXOJe" data-title="Ceres求解库用法简析" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-记录-Colmap源码-前端模块" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/04/18/%E8%AE%B0%E5%BD%95-Colmap%E6%BA%90%E7%A0%81-%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97/" class="article-date">
+  <time class="dt-published" datetime="2026-04-17T17:01:28.000Z" itemprop="datePublished">2026-04-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/04/18/%E8%AE%B0%E5%BD%95-Colmap%E6%BA%90%E7%A0%81-%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97/">[记录]Colmap源码-前端模块</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>源码：<a target="_blank" rel="noopener" href="https://github.com/colmap/colmap/tree/main/src/colmap">https://github.com/colmap/colmap/tree/main/src/colmap</a></p>
+<h2 id="sift特征提取与描述"><a href="#sift特征提取与描述" class="headerlink" title="sift特征提取与描述"></a>sift特征提取与描述</h2><p><code>colmap/feature/sift.h</code> 这个文件定义了特征提取和特征匹配的参数配置。</p>
+<ul>
+<li>colmap使用改良后的dsp-sift，基本与原版一致，区别在于特征点描述子不是直接取，而是在多个尺度内取平均，加强了鲁棒性</li>
+<li>特征点描述子使用L1范数进行了归一化，消除光照影响，效果比L2范数好</li>
+<li>使用siftGPU库</li>
+<li>默认4阶，每阶3层（因为要借助DOG差分金字塔计算局部极值，实际每阶有3+3&#x3D;6个图像），分阶实际上是想在σ有限的情况下不漏掉大尺度的特征</li>
+<li>sift特征提取中的相关概念可以参考视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV161UKYjE5z/?share_source=copy_web&vd_source=2e706b2cc4ed4fc4ee0f4ad9862b3f01">https://www.bilibili.com/video/BV161UKYjE5z/?share_source=copy_web&amp;vd_source=2e706b2cc4ed4fc4ee0f4ad9862b3f01</a></li>
+<li>sift原理详解文章：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU0NjgzMDIxMQ==&mid=2247599504&idx=3&sn=b3e46e54abc43a2e8952a1d774f69897">https://mp.weixin.qq.com/s?__biz=MzU0NjgzMDIxMQ==&amp;mid=2247599504&amp;idx=3&amp;sn=b3e46e54abc43a2e8952a1d774f69897</a></li>
+</ul>
+<p><code>colmap/feature/types.h</code> 定义了特征点、特征描述子以及特征匹配关系的存储格式。</p>
+<p><code>colmap/scene/database_sqlite.cc</code> 定义了将各类数据保存在sqlite中的方法，结合types.h来看。</p>
+<ul>
+<li>数据库中采用6参数描述一个特征点：x，y，a11，a12，a21，a22</li>
+<li>前两个代表特征点的二维坐标，后四个组成仿射形状矩阵，用于描述特征点周围部分区域的尺度和偏斜形状</li>
+<li>colmap默认采取经典方案，用圆来描述特征点，即位置xy+尺度σ+主方向θ：归一化σ确保对缩放不敏感，归一化θ确保对旋转不敏感；如果需要也可以参看sift.h设置参数，用椭圆来描述，增加对视角变化和图像倾斜的不敏感</li>
+<li>匹配点的存储格式是特征点的索引对</li>
+</ul>
+<p><code>colmap/controllers/feature_extraction.cc</code> 定义了整个特征提取流程的调度器，管理各个过程的队列、多线程等。</p>
+<ul>
+<li>colmap支持mask功能，在MaskKeypoints方法中将不提取照片的mask部分的特征点，可以用来剔除易造成误匹配的部分，比如动态物体、无人机机架、天空、水面等</li>
+<li>再比如，去除照片畸变后边缘多出的空白部分设为mask，减小计算量</li>
+</ul>
+<h2 id="sift特征匹配"><a href="#sift特征匹配" class="headerlink" title="sift特征匹配"></a>sift特征匹配</h2><p><code>colmap/feature/pairing.cc</code> 定义了一系列图像配对生成器。</p>
+<ul>
+<li>这个配对生成器包含各种匹配方法，如暴力匹配、词汇树匹配、顺序匹配、空间匹配、转移匹配；一般拼接素材都是有前后关系的，<strong>顺序匹配</strong>和<strong>空间匹配</strong>用得多</li>
+<li>配对生成器并不得到最终的特征点匹配关系，而是先生成<strong>图像</strong>匹配对（Image Pairs），再由后续步骤对比图像上特征点的<strong>余弦相似度</strong>等指标进行筛选得到匹配关系</li>
+<li>关于几种匹配方法：<ol>
+<li>顺序匹配，将某图像与其后overlap个图像生成Image Pairs，也就是在图像前后overlap范围内进行匹配，默认overlap&#x3D;10</li>
+<li>空间匹配，对每一个图像建立位置矩阵，设置邻居个数（默认50）和最大距离，利用knn算法得到每个图像最近的50个邻居，其中在最大距离之内的则建立匹配关系</li>
+<li>转移匹配，由一系列（图像名1，图像名2）指定匹配关系，适合自定义匹配算法</li>
+</ol>
+</li>
+</ul>
+<p><code>colmap/estimators/two_view_geometry.cc</code> 定义了“两视图几何估计”的核心逻辑方法。</p>
+<ul>
+<li>“两视图几何估计（Two-View Geometry）”这个词意思是通过对同一个点的两个不同视角恢复场景三维结构和相机位姿</li>
+<li>它从两张图像的点的匹配关系中，估计相机的相对位姿、几何关系，同时做几何验证，区分内点（inliers，符合模型的点对）和外点（outliers，不符合模型的点对，一般是错误匹配或噪声）</li>
+<li>针对两张图像，colmap会同时匹配三种模型：<ol>
+<li>H（Homography），单应矩阵，针对平面或纯旋转相机（全景）</li>
+<li>F（Fundamental Matrix），基础矩阵，针对未标定的一般运动</li>
+<li>E（Essential Matrix），本质矩阵，针对标定相机的一般运动</li>
+</ol>
+</li>
+<li>经过RANSAC或LORANSAC拟合后会得到每种模型拟合的内点数量，比较E&#x2F;F、H&#x2F;F、H&#x2F;E内点个数的比，最终决定使用哪种模型</li>
+<li>E本质上是由F经相机内参K矫正得到，对于未标定的相机，它的内参K未知，无法得到E，最终只会比较H&#x2F;F（也有方法估计内参，比如利用照片本身的EXIF，或拟合模型自标定收敛）</li>
+<li>由照片间内点个数可以得到临界矩阵热力图，红色条带越规整说明相机的轨迹规则、数据排列好；在丰富度上，暴力匹配&gt;空间匹配&gt;顺序匹配，随之而来的sfm的时间也越长，丰富度高并不一定减小误差，反而一般来说<strong>顺序匹配</strong>冗余信息最少、热力图最干净，最后自标定最准、精度也是最高的</li>
+<li>比较相机运行轨迹，围着某点做环绕运动更容易使sfm收敛</li>
+</ul>
+<blockquote>
+<p><code>优化点1</code> SuperPoint+SuperGlue 利用神经网络进行特征点的提取和匹配，在<strong>季节和光照等长时间变换、重复纹理等 corner-case</strong> 上效果优于传统方法，但精度不如后者，在应用上注意：</p>
+<ul>
+<li>可先用传统的ORB、SIFT做定姿定位，再加上learning特征做三角化</li>
+<li>先对照片做去畸变可提升效果</li>
+<li>参考源码：<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/cvg/Hierarchical-Localization">https://github.com/cvg/Hierarchical-Localization</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naver/kapture">https://github.com/naver/kapture</a></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><code>优化点2</code> feature-scale 定权优化，特征点的尺度（scale）一方面代表这个特征的远近，另一方面代表特征点的稳定性（尺度越小越容易受噪声影响，大尺度特征可信度更高）；因此在BA优化过程中，将<strong>特征点尺度的倒数与重投影误差的组合</strong>设为最终误差方程，加大远处点的优化程度</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://nnnut-zhou.github.io/2026/04/18/%E8%AE%B0%E5%BD%95-Colmap%E6%BA%90%E7%A0%81-%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97/" data-id="cuidMBZiKXsLe0Icyb_mId1Dj" data-title="[记录]Colmap源码-前端模块" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/04/18/Ceres%E6%B1%82%E8%A7%A3%E5%BA%93%E7%94%A8%E6%B3%95%E7%AE%80%E6%9E%90/">Ceres求解库用法简析</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/%E8%AE%B0%E5%BD%95-Colmap%E6%BA%90%E7%A0%81-%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97/">[记录]Colmap源码-前端模块</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 Lee Chou<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
