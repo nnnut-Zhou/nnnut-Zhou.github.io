@@ -27,7 +27,7 @@
 <meta property="og:description" content="适用场景：项目已有代码（≥ 10 文件），你要做具体的修改核心原则：分层装载，按需取用 — 不要一开始就把代码全塞给 AI  使用前提 使用 Claude Code 或类似支持文件工具 + subagent 的 AI 编程环境 你已经知道大概要改什么（需求明确），但可能不知道具体改哪些文件 项目根目录有 CLAUDE.md（没有就先写一份，怎么写见文末附录）：记录项目级约定、风格、禁区、关键入口">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-19T14:49:48.000Z">
-<meta property="article:modified_time" content="2026-04-19T15:13:17.411Z">
+<meta property="article:modified_time" content="2026-04-19T15:25:56.627Z">
 <meta property="article:author" content="Lee Chou">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -273,7 +273,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.8k 字
+          4.7k 字
         
       </span>
     
@@ -616,7 +616,7 @@
 <li><p><strong>本项目</strong>：跑 <code>/init</code> 前先手动建一个只写”用中文”的 <code>CLAUDE.md</code>，再跑 <code>/init</code></p>
 </li>
 <li><p><strong>一劳永逸（推荐）</strong>：在<strong>用户级全局</strong> <code>CLAUDE.md</code>（Windows：<code>C:\Users\&lt;你的用户名&gt;\.claude\CLAUDE.md</code>；macOS&#x2F;Linux：<code>~/.claude/CLAUDE.md</code>）里加一条：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-bullet">- </span>生成文档、注释、commit message 默认用中文（除非明确要求英文）<br></code></pre></td></tr></table></figure>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-bullet">- </span>生成文档、注释、commit message 默认用中文<br></code></pre></td></tr></table></figure>
 
 <p>这个文件<strong>所有项目共享</strong>，一次设置永久生效——以后每次 <code>/init</code>、每次对话都会读到。</p>
 </li>
