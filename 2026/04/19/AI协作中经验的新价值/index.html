@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>AI协作中经验的新价值 | Lee的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="很多人担心 AI 会让工程经验贬值。我最近做了一个实际项目后，反而得出相反的结论：AI 让经验的价值变得更精细、更关键。下面用一个具体的例子来说明。  一、场景需求大致是这样的：  我手头有一批无人机拍的正射影像 TIF，它们存在系统性地理位置偏移。我需要把它们纠正到正确位置，然后按一份外部提供的网格 SHP 文件，裁切成一块块小 TIF 输出。  看起来是很标准的 GIS 流水线： 1偏移 T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI协作中经验的新价值">
+<meta property="og:url" content="https://nnnut-zhou.github.io/2026/04/19/AI%E5%8D%8F%E4%BD%9C%E4%B8%AD%E7%BB%8F%E9%AA%8C%E7%9A%84%E6%96%B0%E4%BB%B7%E5%80%BC/index.html">
+<meta property="og:site_name" content="Lee的博客">
+<meta property="og:description" content="很多人担心 AI 会让工程经验贬值。我最近做了一个实际项目后，反而得出相反的结论：AI 让经验的价值变得更精细、更关键。下面用一个具体的例子来说明。  一、场景需求大致是这样的：  我手头有一批无人机拍的正射影像 TIF，它们存在系统性地理位置偏移。我需要把它们纠正到正确位置，然后按一份外部提供的网格 SHP 文件，裁切成一块块小 TIF 输出。  看起来是很标准的 GIS 流水线： 1偏移 T">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-19T10:01:53.000Z">
+<meta property="article:modified_time" content="2026-04-19T10:02:20.433Z">
+<meta property="article:author" content="Lee Chou">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Lee的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Lee的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://nnnut-Zhou.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-AI协作中经验的新价值" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/04/19/AI%E5%8D%8F%E4%BD%9C%E4%B8%AD%E7%BB%8F%E9%AA%8C%E7%9A%84%E6%96%B0%E4%BB%B7%E5%80%BC/" class="article-date">
+  <time class="dt-published" datetime="2026-04-19T10:01:53.000Z" itemprop="datePublished">2026-04-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      AI协作中经验的新价值
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>很多人担心 AI 会让工程经验贬值。我最近做了一个实际项目后，反而得出相反的结论：<strong>AI 让经验的价值变得更精细、更关键</strong>。下面用一个具体的例子来说明。</p>
+</blockquote>
+<h2 id="一、场景"><a href="#一、场景" class="headerlink" title="一、场景"></a>一、场景</h2><p>需求大致是这样的：</p>
+<blockquote>
+<p>我手头有一批无人机拍的正射影像 TIF，它们存在<strong>系统性地理位置偏移</strong>。我需要把它们纠正到正确位置，然后按一份外部提供的网格 SHP 文件，裁切成一块块小 TIF 输出。</p>
+</blockquote>
+<p>看起来是很标准的 GIS 流水线：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">偏移 TIF → 找一个位置正确的参考底图 → 做配准 → 裁切</span><br></pre></td></tr></table></figure>
+
+<p>理论上，我完全可以对 AI 说：”我有一组 TIF，帮我纠偏然后按 SHP 裁切。” 然后等它给我一整个脚本。</p>
+<p><strong>但我没有这么做。</strong></p>
+<h2 id="二、为什么不把整条流水线一次性交出去"><a href="#二、为什么不把整条流水线一次性交出去" class="headerlink" title="二、为什么不把整条流水线一次性交出去"></a>二、为什么不把整条流水线一次性交出去</h2><p>项目开始时，我心里是这样盘的：</p>
+<ul>
+<li><strong>“按 SHP 裁切”这一步</strong>：完全是 routine 自动化，即使不用代码、手工在 QGIS&#x2F;ArcGIS 里点几下也能做，AI 怎么写都不会翻车。</li>
+<li><strong>“找参考底图”这一步</strong>：范围已知、数据源固定、接口调用加拼接，典型的 CRUD 类任务，AI 强项。</li>
+<li><strong>“影像与底图配准”这一步</strong>：<strong>这是风险最高的环节</strong>。</li>
+</ul>
+<p>为什么配准是风险点？凭过去的经验：</p>
+<ul>
+<li>参考底图往往是<strong>过时的、模糊的、光照条件不同</strong>。直接用特征点（SIFT、ORB）匹配极易误匹配</li>
+<li>之前尝试过 SuperGlue 这类深度学习匹配方法，效果不稳定，我对它不信任</li>
+<li>手工处理流程里，<strong>所有步骤中唯一需要”人用脑判断”的就是配准这一步</strong>。其他步骤都是流程化的</li>
+</ul>
+<p>换句话说：<strong>我凭经验知道，这条链路里只有一个点是真正不确定的，其他都是确定可以解决的</strong>。</p>
+<p>所以我做的事情是：<strong>只把那个不确定的点交给 AI 去探索</strong>，先不谈完整流水线。</p>
+<h2 id="三、结果：AI-提供了我没想到的方案"><a href="#三、结果：AI-提供了我没想到的方案" class="headerlink" title="三、结果：AI 提供了我没想到的方案"></a>三、结果：AI 提供了我没想到的方案</h2><p>我原本以为的候选方案是特征点匹配和 SuperGlue，已经不抱太大希望。</p>
+<p>但 AI 在回答中提到了<strong>相位相关（Phase Correlation）</strong> —— 一种基于傅里叶变换、在频域求互相关的方法。它有几个我没预料到的特性：</p>
+<ul>
+<li>对模糊底图比特征点方法<strong>鲁棒得多</strong></li>
+<li>对光照差异<strong>几乎不敏感</strong></li>
+<li>只能处理平移偏移 —— 恰好和我的场景匹配（系统性偏移主要就是平移）</li>
+<li>实现简单、计算快</li>
+</ul>
+<p>这个方案我之前完全没接触过。</p>
+<p>**当这一步被验证可行后，我才把完整链路的其他环节交给 AI。**整个项目大约 3 小时从无到有，得到可复用的流水线。</p>
+<h2 id="四、如果我一开始就给完整流水线会怎样？"><a href="#四、如果我一开始就给完整流水线会怎样？" class="headerlink" title="四、如果我一开始就给完整流水线会怎样？"></a>四、如果我一开始就给完整流水线会怎样？</h2><p>几种可能的路径：</p>
+<table>
+<thead>
+<tr>
+<th>如果我这样做</th>
+<th>可能结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“纠偏 + 裁切”一句话</td>
+<td>AI 问我一堆澄清问题，或默认用最常见的特征匹配方案，踩坑后我再修</td>
+</tr>
+<tr>
+<td>一开始就铺完整流水线并指定”用特征匹配”</td>
+<td>AI 老老实实写 SIFT，效果很差，我花时间调参、最后推翻重做</td>
+</tr>
+<tr>
+<td>只交配准环节（实际做法）</td>
+<td>AI 对比多种方案，我发现相位相关，验证后再展开</td>
+</tr>
+</tbody></table>
+<p>这里的关键差异不在于”AI 能不能做这件事”，而在于 —— <strong>我有没有在架构层面封死探索空间</strong>。</p>
+<h2 id="五、抽象出来的决策框架"><a href="#五、抽象出来的决策框架" class="headerlink" title="五、抽象出来的决策框架"></a>五、抽象出来的决策框架</h2><p>把这个思路抽象一下，得到一个二维决策矩阵。两个维度：</p>
+<ol>
+<li><strong>你的确定度</strong> —— 这件事你心里有没有数</li>
+<li><strong>任务的风险</strong> —— 做错了是不是可逆、代价大不大</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>低风险 &#x2F; 可逆</strong></th>
+<th><strong>高风险 &#x2F; 不可逆</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>高确定</strong></td>
+<td>直接做，别废话</td>
+<td><strong>做之前让 AI 挑刺</strong>（让它反驳，不是让它实现）</td>
+</tr>
+<tr>
+<td><strong>低确定</strong></td>
+<td>快速试错，边做边学</td>
+<td>充分探索 + 分阶段验证</td>
+</tr>
+</tbody></table>
+<p>值得单独指出的是 <strong>“高确定 + 高风险” 象限是最需要警惕的</strong> —— 直觉上你会觉得”我都确定了还怕啥”，但正因为你确定，你不会再检查；一旦这种自信是错的，代价又不可逆。这个组合里，多花 10 分钟让 AI 挑刺是极高 ROI 的投入。</p>
+<h2 id="六、经验在这个框架里的作用"><a href="#六、经验在这个框架里的作用" class="headerlink" title="六、经验在这个框架里的作用"></a>六、经验在这个框架里的作用</h2><p>这是整篇文章想说的核心 —— <strong>经验的新价值在于它能让你精准地定位自己的确定度</strong>。</p>
+<p>具体来说：</p>
+<h3 id="1-经验告诉你”哪里是-routine，哪里是难点”"><a href="#1-经验告诉你”哪里是-routine，哪里是难点”" class="headerlink" title="1. 经验告诉你”哪里是 routine，哪里是难点”"></a>1. 经验告诉你”哪里是 routine，哪里是难点”</h3><p>没有经验的开发者面对一条流水线，每一步在他眼里都一样 —— 都需要问 AI 怎么做。他只能把整个问题一次性扔给 AI，让 AI 决定架构。</p>
+<p>有经验的开发者看同样一条流水线，能一眼分出：</p>
+<ul>
+<li>哪些是 routine 自动化，AI 闭着眼也能写对</li>
+<li>哪些是存在多种方案需要权衡的节点</li>
+<li>哪些是<strong>容易踩坑的关键判断</strong>（比如配准方法的选择）</li>
+</ul>
+<p>这种辨别力本身就是产出效率的倍增器。</p>
+<h3 id="2-经验帮你识别”错误的确定”"><a href="#2-经验帮你识别”错误的确定”" class="headerlink" title="2. 经验帮你识别”错误的确定”"></a>2. 经验帮你识别”错误的确定”</h3><p>Dunning-Kruger 效应在工程里同样适用。初学者对 AI 生成的代码容易过度信任（看不出问题），资深工程师反而会立刻察觉一些细节（”这里的坐标系转换没处理单位”、”这个文件大小放内存会炸”)。</p>
+<p>这次项目里，AI 生成的第一版代码有一个<strong>单位不匹配的 CRS bug</strong> —— 它在 EPSG:3857（米）里算出偏移量，却直接加到了 EPSG:4326（度）的源坐标上，导致纠正后的影像偏移了 <strong>300 多公里</strong>。</p>
+<p>这个 bug AI 自己发现不了（如果能发现就不会写出来）。<strong>我是靠经验和结果验证发现的</strong>：看到”像素偏移几米”和”结果位置偏了几百公里”对不上，立刻意识到是坐标系单位问题。</p>
+<h3 id="3-经验让你能”对抗式提问”"><a href="#3-经验让你能”对抗式提问”" class="headerlink" title="3. 经验让你能”对抗式提问”"></a>3. 经验让你能”对抗式提问”</h3><p>经验不仅让你知道怎么写，还让你知道 AI 容易在哪里出错。典型的对抗式问题包括：</p>
+<ul>
+<li>“这段代码做了哪些<strong>没被验证的假设</strong>？”</li>
+<li>“如果输入 TIF 有 3-4GB，这段逻辑还能跑通吗？”</li>
+<li>“这两个模块之间的数据单位是一致的吗？”</li>
+</ul>
+<p>这些问题没有经验的人想不出来，但对有经验的人是本能反应。</p>
+<h3 id="4-经验让你能分层授权"><a href="#4-经验让你能分层授权" class="headerlink" title="4. 经验让你能分层授权"></a>4. 经验让你能<strong>分层授权</strong></h3><p>这是最关键的一点。没有经验的人只能整块授权（”全交给 AI” 或 “全自己来”）。有经验的人可以做<strong>子任务粒度的授权决策</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">问题定义层：我更清楚 → 直接说，别展开</span><br><span class="line">技术选型层：有几个候选 → 列出来让 AI 对比</span><br><span class="line">具体实现层：AI 先验更强 → 描述接口，放手让它写  </span><br><span class="line">风险点：我知道&quot;哪里危险&quot;但不一定知道&quot;怎么破&quot; → 隔离出来让 AI 探索</span><br></pre></td></tr></table></figure>
+
+<p>这次项目里，我正是这样做的：流水线架构我自己定（问题定义），但配准这一步的方案开放给 AI 探索（风险点）。结果既保留了控制权，又获得了意外的方案收益。</p>
+<h2 id="七、实战建议"><a href="#七、实战建议" class="headerlink" title="七、实战建议"></a>七、实战建议</h2><p>如果你想把这个思路落地到日常工作里，建议这样做：</p>
+<ol>
+<li><strong>每次接到需求时，花 2 分钟在心里过一遍流水线</strong>，把每一步按”确定度 × 风险”分类</li>
+<li><strong>不要一上来就铺完整脚手架</strong>。先把最不确定的环节单独抽出来让 AI 探索</li>
+<li><strong>对抗式问比”怎么做”问更重要</strong>。在写代码之前问 AI：”这样做会在什么情况下失败？”</li>
+<li><strong>高确定 + 高风险的步骤，强制自己做一次验证</strong>。不是让 AI 检查自己的代码，而是让 AI 从挑错角度反驳你的方案</li>
+<li><strong>实时更新确定度</strong>。对话开始时的判断只是初值，AI 抛出一个你没想过的点（比如一个你不知道的坐标系陷阱），你应该立刻下调那部分的确定度</li>
+</ol>
+<h2 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a>八、总结</h2><p>很多人担心 AI 会让工程经验贬值。但做完这个项目我的感受相反：<strong>AI 并没有让经验贬值，而是让经验的使用方式变得更精细了</strong>。</p>
+<p>过去的经验主要价值是”知道怎么做”；现在经验的价值更多是：</p>
+<ul>
+<li><strong>知道哪里是风险点</strong>（决定哪里该慢）</li>
+<li><strong>知道哪里是 routine</strong>（决定哪里该快）</li>
+<li><strong>知道 AI 容易在哪里错</strong>（决定在哪里多问一步）</li>
+<li><strong>知道自己的确定度是真的还是错觉</strong>（决定在哪里自信、哪里谦虚）</li>
+</ul>
+<p>这种能力不会随 AI 进步而贬值，反而会随着 AI 能力的增强而<strong>变得更值钱</strong> —— 因为能用好 AI 的前提，是先搞清楚什么时候该用、什么时候该不用。</p>
+<p>没有经验就全盘接受 AI 输出，那是最危险的用法。有经验但不放手让 AI 探索，那是最浪费的用法。<strong>两者之间的平衡点，就是新时代工程师的核心竞争力。</strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://nnnut-zhou.github.io/2026/04/19/AI%E5%8D%8F%E4%BD%9C%E4%B8%AD%E7%BB%8F%E9%AA%8C%E7%9A%84%E6%96%B0%E4%BB%B7%E5%80%BC/" data-id="cuiduklS_RYvGyLtb8VN9WfdA" data-title="AI协作中经验的新价值" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/04/19/AI%E5%8D%8F%E4%BD%9C%E9%A1%B9%E7%9B%AE%E5%AE%8C%E6%88%90%E5%90%8E%E7%9A%8430%E5%88%86%E9%92%9F%E7%BB%93%E6%9E%84%E5%8C%96%E9%80%9F%E8%AF%BB%E6%B8%85%E5%8D%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">AI协作项目完成后的30分钟结构化速读清单</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/04/19/AI%E5%8D%8F%E4%BD%9C%E4%B8%AD%E7%BB%8F%E9%AA%8C%E7%9A%84%E6%96%B0%E4%BB%B7%E5%80%BC/">AI协作中经验的新价值</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/19/AI%E5%8D%8F%E4%BD%9C%E9%A1%B9%E7%9B%AE%E5%AE%8C%E6%88%90%E5%90%8E%E7%9A%8430%E5%88%86%E9%92%9F%E7%BB%93%E6%9E%84%E5%8C%96%E9%80%9F%E8%AF%BB%E6%B8%85%E5%8D%95/">AI协作项目完成后的30分钟结构化速读清单</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/%E6%88%91%E7%94%A8AI%E5%86%99%E4%BA%86%E4%B8%80%E5%A5%97%E5%AE%9E%E6%97%B6%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-%E7%84%B6%E5%90%8E%E6%8E%A8%E7%BF%BB%E4%BA%86%E5%AE%83/">我用AI写了一套实时视频检测系统，然后推翻了它</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/%E5%88%86%E4%BA%AB-%E6%8A%80%E6%9C%AF%E4%BA%A7%E5%93%81%E5%8C%96-%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A%E5%8C%96/">[分享] 技术产品化-产品商业化</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/18/Ceres%E6%B1%82%E8%A7%A3%E5%BA%93%E7%94%A8%E6%B3%95%E7%AE%80%E6%9E%90/">Ceres求解库用法简析</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 Lee Chou<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
