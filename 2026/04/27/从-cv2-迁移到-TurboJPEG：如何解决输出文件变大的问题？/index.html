@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lee Chou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="起因：在使用 turbojpeg 替换 cv2.imwrite 加速 JPEG 编码时，发现输出文件体积明显偏大。深入排查后发现根本原因是两个库的默认色度子采样配置不同。   JPEG 不直接存储 RGB很多人以为 JPEG 文件里存的是 RGB 像素值，实际上不是。JPEG 内部存储的是 YCbCr： 123Y  &#x3D; 亮度（Luma）Cb &#x3D; 蓝色色度偏移（Blue Chroma）Cr &#x3D; 红">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从 cv2 迁移到 TurboJPEG：如何解决输出文件变大的问题？">
+<meta property="og:url" content="https://nnnut-zhou.github.io/2026/04/27/%E4%BB%8E-cv2-%E8%BF%81%E7%A7%BB%E5%88%B0-TurboJPEG%EF%BC%9A%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6%E5%8F%98%E5%A4%A7%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Lee的博客">
+<meta property="og:description" content="起因：在使用 turbojpeg 替换 cv2.imwrite 加速 JPEG 编码时，发现输出文件体积明显偏大。深入排查后发现根本原因是两个库的默认色度子采样配置不同。   JPEG 不直接存储 RGB很多人以为 JPEG 文件里存的是 RGB 像素值，实际上不是。JPEG 内部存储的是 YCbCr： 123Y  &#x3D; 亮度（Luma）Cb &#x3D; 蓝色色度偏移（Blue Chroma）Cr &#x3D; 红">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-27T15:17:47.000Z">
+<meta property="article:modified_time" content="2026-04-27T15:18:20.650Z">
+<meta property="article:author" content="Lee Chou">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>从 cv2 迁移到 TurboJPEG：如何解决输出文件变大的问题？ - Lee的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"nnnut-zhou.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Lee&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="从 cv2 迁移到 TurboJPEG：如何解决输出文件变大的问题？"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-27 23:17" pubdate>
+          2026年4月27日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">从 cv2 迁移到 TurboJPEG：如何解决输出文件变大的问题？</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>起因：在使用 turbojpeg 替换 cv2.imwrite 加速 JPEG 编码时，发现输出文件体积明显偏大。深入排查后发现根本原因是两个库的默认<strong>色度子采样</strong>配置不同。</p>
+</blockquote>
+<hr>
+<h2 id="JPEG-不直接存储-RGB"><a href="#JPEG-不直接存储-RGB" class="headerlink" title="JPEG 不直接存储 RGB"></a>JPEG 不直接存储 RGB</h2><p>很多人以为 JPEG 文件里存的是 RGB 像素值，实际上不是。JPEG 内部存储的是 <strong>YCbCr</strong>：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs abnf"><span class="hljs-attribute">Y</span>  <span class="hljs-operator">=</span> 亮度（Luma）<br><span class="hljs-attribute">Cb</span> <span class="hljs-operator">=</span> 蓝色色度偏移（Blue Chroma）<br><span class="hljs-attribute">Cr</span> <span class="hljs-operator">=</span> 红色色度偏移（Red Chroma）<br></code></pre></td></tr></table></figure>
+
+<p>完整的编码流程：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs armasm">输入 RGB<br>    ↓ 色彩空间转换<br>   YCbCr<br>    ↓ 色度子采样<br>   Y（全分辨率）+ Cb/Cr（降分辨率）<br>    ↓ 分 <span class="hljs-number">8</span><span class="hljs-built_in">x8</span> 块 → DCT → 量化<br>   压缩系数<br>    ↓ 哈夫曼编码<br>   .jpg 文件<br></code></pre></td></tr></table></figure>
+
+<p>调用 <code>cv2.imwrite</code> 或 <code>turbojpeg.encode</code> 时传入的是 BGR&#x2F;RGB 数组，库内部自动完成 RGB→YCbCr 转换，开发者感知不到这个过程。</p>
+<hr>
+<h2 id="影响文件大小的因素"><a href="#影响文件大小的因素" class="headerlink" title="影响文件大小的因素"></a>影响文件大小的因素</h2><p>JPEG 文件大小由多个独立因素共同决定，按影响程度排序：</p>
+<h3 id="1-色度子采样（最大影响）"><a href="#1-色度子采样（最大影响）" class="headerlink" title="1. 色度子采样（最大影响）"></a>1. 色度子采样（最大影响）</h3><p>人眼对亮度变化的分辨率远高于对颜色变化的分辨率。JPEG 利用这一特性，对 Cb&#x2F;Cr 通道降低空间分辨率存储。</p>
+<p><strong>三种常见模式：</strong></p>
+<p><strong>4:4:4（无子采样）</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs css">每个像素独立存储完整的 <span class="hljs-attribute">Y</span>、Cb、Cr 值<br>色度数据量：<span class="hljs-number">100%</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>4:2:2</strong></p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs erlang-repl">水平方向每 <span class="hljs-number">2</span> 个像素共用一组 Cb/Cr<br>色度数据量：<span class="hljs-number">50</span><span class="hljs-comment">%</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>4:2:0（最常见）</strong></p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs erlang-repl"><span class="hljs-number">2</span>×<span class="hljs-number">2</span> 四个像素共用一组 Cb/Cr<br>色度数据量：<span class="hljs-number">25</span><span class="hljs-comment">%</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>对文件大小的影响（quality&#x3D;95，4096×4096 图像）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>相对文件大小</th>
+<th>颜色精度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>4:4:4</td>
+<td>基准（最大）</td>
+<td>完整</td>
+</tr>
+<tr>
+<td>4:2:2</td>
+<td>约小 15-20%</td>
+<td>水平方向颜色略损</td>
+</tr>
+<tr>
+<td>4:2:0</td>
+<td>约小 25-35%</td>
+<td>颜色边界渗色</td>
+</tr>
+</tbody></table>
+<p><strong>4:2:0 的视觉问题——色彩渗色（Color Bleeding）：</strong></p>
+<figure class="highlight fix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs fix"><span class="hljs-attr">原始图像:          4:2:0 解码后:</span><br><span class="hljs-attr">■■■□□□             ■■▪▪□□</span><br><span class="hljs-attr">■■■□□□    →        ■■▪▪□□</span><br><span class="hljs-attr">■■■□□□             ■■▪▪□□</span><br><span class="hljs-attr">（■</span>=<span class="hljs-string">红  □=绿）      （▪=插值混合色）</span><br></code></pre></td></tr></table></figure>
+
+<p>颜色边界处出现过渡色，对颜色精确度要求高的场景（遥感、医学图像、作物识别）影响明显。</p>
+<hr>
+<h3 id="2-量化质量（Quality）"><a href="#2-量化质量（Quality）" class="headerlink" title="2. 量化质量（Quality）"></a>2. 量化质量（Quality）</h3><p>DCT 把每个 8x8 像素块分解成 64 个频率系数：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs abnf">DCT 系数矩阵（左上<span class="hljs-operator">=</span>低频，右下<span class="hljs-operator">=</span>高频）<br>┌─────────────────────┐<br>│ DC  低频  →  →  高频 │<br>│ 低频                 │<br>│  ↓                  │<br>│ 高频  →  →  高频 高频│<br>└─────────────────────┘<br></code></pre></td></tr></table></figure>
+
+<p>量化过程：每个系数除以量化步长后取整，quality 越低步长越大，损失越多：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">quality</span>=<span class="hljs-number">100</span>: 系数 <span class="hljs-number">127</span> / 步长 <span class="hljs-number">1</span>  = <span class="hljs-number">127</span> → 还原 <span class="hljs-number">127</span>（误差 <span class="hljs-number">0</span>）<br><span class="hljs-attribute">quality</span>=<span class="hljs-number">75</span>:  系数 <span class="hljs-number">127</span> / 步长 <span class="hljs-number">8</span>  = <span class="hljs-number">15</span>  → 还原 <span class="hljs-number">120</span>（误差 <span class="hljs-number">7</span>）<br><span class="hljs-attribute">quality</span>=<span class="hljs-number">50</span>:  系数 <span class="hljs-number">127</span> / 步长 <span class="hljs-number">16</span> = <span class="hljs-number">7</span>   → 还原 <span class="hljs-number">112</span>（误差 <span class="hljs-number">15</span>）<br></code></pre></td></tr></table></figure>
+
+<p>高频系数的量化步长更大（细节被激进丢弃），低频系数步长小（整体色调保留）。</p>
+<p><strong>Quality 与文件大小的非线性关系：</strong></p>
+<table>
+<thead>
+<tr>
+<th>Quality</th>
+<th>典型文件大小（相对 Q100）</th>
+<th>视觉质量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100</td>
+<td>100%</td>
+<td>几乎无损</td>
+</tr>
+<tr>
+<td>95</td>
+<td>~40%</td>
+<td>肉眼难以区分</td>
+</tr>
+<tr>
+<td>85</td>
+<td>~20%</td>
+<td>轻微伪影</td>
+</tr>
+<tr>
+<td>75</td>
+<td>~12%</td>
+<td>明显块状感</td>
+</tr>
+<tr>
+<td>50</td>
+<td>~6%</td>
+<td>严重失真</td>
+</tr>
+</tbody></table>
+<p>quality 从 100 降到 95，文件缩小 60%，视觉损失极小——这是 95 成为”高质量默认值”的原因。</p>
+<hr>
+<h3 id="3-哈夫曼编码"><a href="#3-哈夫曼编码" class="headerlink" title="3. 哈夫曼编码"></a>3. 哈夫曼编码</h3><p>DCT 量化后的系数还要经过熵编码。标准 JPEG 使用哈夫曼编码，<strong>优化哈夫曼表</strong>（根据图像内容生成最优编码表）比标准表能再小约 5%，但需要额外计算时间。</p>
+<hr>
+<h3 id="4-渐进式-vs-基线-JPEG"><a href="#4-渐进式-vs-基线-JPEG" class="headerlink" title="4. 渐进式 vs 基线 JPEG"></a>4. 渐进式 vs 基线 JPEG</h3><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+<th>文件大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基线（Baseline）</td>
+<td>从上到下扫描一次</td>
+<td>略大</td>
+</tr>
+<tr>
+<td>渐进式（Progressive）</td>
+<td>多次扫描，先低频后高频</td>
+<td>约小 2-10%</td>
+</tr>
+</tbody></table>
+<p>cv2 默认基线，turbojpeg 可指定：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> turbojpeg <span class="hljs-keyword">import</span> TJFLAG_PROGRESSIVE<br>_tj.encode(img, quality=<span class="hljs-number">95</span>, flags=TJFLAG_PROGRESSIVE)<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-EXIF-元数据"><a href="#5-EXIF-元数据" class="headerlink" title="5. EXIF &#x2F; 元数据"></a>5. EXIF &#x2F; 元数据</h3><p>cv2 默认不写 EXIF，某些库会附加相机参数、GPS 坐标、缩略图等，几 KB 到几十 KB 不等。</p>
+<hr>
+<h2 id="回到问题本身：turbojpeg-vs-cv2-体积差异"><a href="#回到问题本身：turbojpeg-vs-cv2-体积差异" class="headerlink" title="回到问题本身：turbojpeg vs cv2 体积差异"></a>回到问题本身：turbojpeg vs cv2 体积差异</h2><p><strong>现象：</strong> 相同 quality&#x3D;95，turbojpeg 输出比 cv2 大</p>
+<p><strong>根本原因：</strong> 默认子采样模式不同</p>
+<table>
+<thead>
+<tr>
+<th>库</th>
+<th>默认子采样</th>
+<th>色度数据量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cv2.imwrite</td>
+<td>4:2:0</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>turbojpeg（实测）</td>
+<td>4:2:2</td>
+<td>50%</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>cv2 的默认值 4:2:0 在 <a target="_blank" rel="noopener" href="https://docs.opencv.org/4.x/d8/d6a/group__imgcodecs__flags.html">OpenCV 官方文档</a> 中有明确记载。OpenCV 4.2+ 可通过 <code>IMWRITE_JPEG_SAMPLING_FACTOR</code> 参数修改。</p>
+</blockquote>
+<h3 id="如何查看-turbojpeg-的默认子采样模式"><a href="#如何查看-turbojpeg-的默认子采样模式" class="headerlink" title="如何查看 turbojpeg 的默认子采样模式"></a>如何查看 turbojpeg 的默认子采样模式</h3><p>turbojpeg 的默认值取决于版本和平台，不同环境可能不同。用以下代码检测：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> turbojpeg <span class="hljs-keyword">import</span> TurboJPEG, TJPF_BGR<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>tj = TurboJPEG()<br><br><span class="hljs-comment"># 创建测试图像</span><br>img = np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">255</span>, (<span class="hljs-number">64</span>, <span class="hljs-number">64</span>, <span class="hljs-number">3</span>), dtype=np.uint8)<br><br><span class="hljs-comment"># 用默认参数编码</span><br>buf = tj.encode(img, quality=<span class="hljs-number">95</span>, pixel_format=TJPF_BGR)<br><br><span class="hljs-comment"># 解码时读取子采样信息</span><br>_, _, subsample, _ = tj.decode_header(buf)<br><br>names = &#123;<span class="hljs-number">0</span>: <span class="hljs-string">&quot;4:4:4&quot;</span>, <span class="hljs-number">1</span>: <span class="hljs-string">&quot;4:2:2&quot;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&quot;4:2:0&quot;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&quot;GRAY&quot;</span>, <span class="hljs-number">4</span>: <span class="hljs-string">&quot;4:4:0&quot;</span>, <span class="hljs-number">5</span>: <span class="hljs-string">&quot;4:1:1&quot;</span>&#125;<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;默认子采样: <span class="hljs-subst">&#123;names.get(subsample, subsample)&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="修复方法——显式指定子采样"><a href="#修复方法——显式指定子采样" class="headerlink" title="修复方法——显式指定子采样"></a>修复方法——显式指定子采样</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> turbojpeg <span class="hljs-keyword">import</span> TurboJPEG, TJPF_BGR, TJSAMP_420, TJSAMP_444<br><br>_tj = TurboJPEG()<br><br><span class="hljs-comment"># 与 cv2 体积对齐（颜色精度略低）</span><br>buf = _tj.encode(img, quality=<span class="hljs-number">95</span>, pixel_format=TJPF_BGR, jpeg_subsample=TJSAMP_420)<br><br><span class="hljs-comment"># 保留完整颜色（推荐用于遥感/作物识别）</span><br>buf = _tj.encode(img, quality=<span class="hljs-number">95</span>, pixel_format=TJPF_BGR, jpeg_subsample=TJSAMP_444)<br></code></pre></td></tr></table></figure>
+
+<p>cv2 同样可以显式指定（OpenCV 4.2+）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2<br><br><span class="hljs-comment"># 4:4:4（无子采样）</span><br>cv2.imwrite(path, img, [cv2.IMWRITE_JPEG_SAMPLING_FACTOR, cv2.IMWRITE_JPEG_SAMPLING_FACTOR_444])<br><br><span class="hljs-comment"># 4:2:0（默认）</span><br>cv2.imwrite(path, img, [cv2.IMWRITE_JPEG_SAMPLING_FACTOR, cv2.IMWRITE_JPEG_SAMPLING_FACTOR_420])<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="如何选择参数"><a href="#如何选择参数" class="headerlink" title="如何选择参数"></a>如何选择参数</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐配置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型训练（颜色敏感）</td>
+<td>4:4:4 + quality&#x3D;95</td>
+<td>颜色精度高，体积适中</td>
+</tr>
+<tr>
+<td>模型训练（颜色不敏感）</td>
+<td>4:2:0 + quality&#x3D;95</td>
+<td>体积最小，速度最快</td>
+</tr>
+<tr>
+<td>存档&#x2F;无损要求</td>
+<td>PNG</td>
+<td>无任何颜色损失</td>
+</tr>
+<tr>
+<td>网页展示</td>
+<td>4:2:0 + quality&#x3D;85</td>
+<td>体积最优，视觉可接受</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>JPEG 文件大小 &#x3D; f(子采样, quality, 哈夫曼表, 渐进式, 元数据)</p>
+<p>其中子采样和 quality 是最主要的两个维度，且相互独立：</p>
+<ul>
+<li><strong>子采样</strong> 决定颜色信息的空间密度（影响颜色边界精度）</li>
+<li><strong>quality</strong> 决定每个像素值的精度（影响纹理细节和块状伪影）</li>
+</ul>
+<p>两个库”同样 quality&#x3D;95”却输出不同大小，根本原因是子采样默认值不同，而不是编码质量有差异。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>从 cv2 迁移到 TurboJPEG：如何解决输出文件变大的问题？</div>
+      <div>https://nnnut-zhou.github.io/2026/04/27/从-cv2-迁移到-TurboJPEG：如何解决输出文件变大的问题？/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Lee Chou</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/19/%E8%AE%A9-AI-%E5%9C%A8%E5%A4%A7%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%81%9A%E4%BF%AE%E6%94%B9%E7%9A%84%E6%A0%87%E5%87%86%E6%93%8D%E4%BD%9C%E6%A8%A1%E6%9D%BF/" title="让 AI 在大项目中做修改的标准操作模板">
+                        <span class="hidden-mobile">让 AI 在大项目中做修改的标准操作模板</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
