@@ -19,15 +19,15 @@
   <meta name="author" content="Lee Chou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="1. 总体框架：优化问题在做什么？很多建模问题都可以写成一个统一形式： $$\min_\theta L(\theta)$$ 也就是寻找一组参数 (\theta)，让目标函数或损失函数 (L(\theta)) 尽可能小。 在这个框架下，需要区分三个层次：    层次 回答的问题 例子    损失函数 我们要最小化什么？ 残差平方和、MSE、交叉熵   正则&#x2F;约束 我们希望解具有什么性质？">
+    <meta name="description" content="1. 总体框架：优化问题在做什么？很多建模问题都可以写成一个统一形式： $$\min_\theta L(\theta)$$ 也就是寻找一组参数 $\theta$，让目标函数或损失函数 $L(\theta)$ 尽可能小。 在这个框架下，需要区分三个层次：    层次 回答的问题 例子    损失函数 我们要最小化什么？ 残差平方和、MSE、交叉熵   正则&#x2F;约束 我们希望解具有什么性质？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="优化、最小二乘与平滑约束笔记">
 <meta property="og:url" content="https://nnnut-zhou.github.io/2026/05/10/%E4%BC%98%E5%8C%96%E3%80%81%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E4%B8%8E%E5%B9%B3%E6%BB%91%E7%BA%A6%E6%9D%9F%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Lee的博客">
-<meta property="og:description" content="1. 总体框架：优化问题在做什么？很多建模问题都可以写成一个统一形式： $$\min_\theta L(\theta)$$ 也就是寻找一组参数 (\theta)，让目标函数或损失函数 (L(\theta)) 尽可能小。 在这个框架下，需要区分三个层次：    层次 回答的问题 例子    损失函数 我们要最小化什么？ 残差平方和、MSE、交叉熵   正则&#x2F;约束 我们希望解具有什么性质？">
+<meta property="og:description" content="1. 总体框架：优化问题在做什么？很多建模问题都可以写成一个统一形式： $$\min_\theta L(\theta)$$ 也就是寻找一组参数 $\theta$，让目标函数或损失函数 $L(\theta)$ 尽可能小。 在这个框架下，需要区分三个层次：    层次 回答的问题 例子    损失函数 我们要最小化什么？ 残差平方和、MSE、交叉熵   正则&#x2F;约束 我们希望解具有什么性质？">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-10T14:17:48.000Z">
-<meta property="article:modified_time" content="2026-05-10T14:25:43.213Z">
+<meta property="article:modified_time" content="2026-05-10T14:38:01.550Z">
 <meta property="article:author" content="Lee Chou">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -273,7 +273,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          9.2k 字
+          10k 字
         
       </span>
     
@@ -284,7 +284,7 @@
         
         
         
-          77 分钟
+          86 分钟
         
       </span>
     
@@ -330,7 +330,7 @@
                 
                 <h2 id="1-总体框架：优化问题在做什么？"><a href="#1-总体框架：优化问题在做什么？" class="headerlink" title="1. 总体框架：优化问题在做什么？"></a>1. 总体框架：优化问题在做什么？</h2><p>很多建模问题都可以写成一个统一形式：</p>
 <p>$$<br>\min_\theta L(\theta)<br>$$</p>
-<p>也就是寻找一组参数 (\theta)，让目标函数或损失函数 (L(\theta)) 尽可能小。</p>
+<p>也就是寻找一组参数 $\theta$，让目标函数或损失函数 $L(\theta)$ 尽可能小。</p>
 <p>在这个框架下，需要区分三个层次：</p>
 <table>
 <thead>
@@ -415,15 +415,15 @@
 <p>$$<br>\min_{w,b} \sum_i (y_i - wx_i - b)^2<br>$$</p>
 <p>这里的“二乘”指残差平方，“最小”指让平方和最小。</p>
 <hr>
-<h1 id="3-RSS、MSE-与机器学习中的损失函数"><a href="#3-RSS、MSE-与机器学习中的损失函数" class="headerlink" title="3. RSS、MSE 与机器学习中的损失函数"></a>3. RSS、MSE 与机器学习中的损失函数</h1><h2 id="3-1-RSS-为什么有时要除以-N-？"><a href="#3-1-RSS-为什么有时要除以-N-？" class="headerlink" title="3.1 RSS 为什么有时要除以 (N)？"></a>3.1 RSS 为什么有时要除以 (N)？</h2><p>残差平方和是：</p>
+<h1 id="3-RSS、MSE-与机器学习中的损失函数"><a href="#3-RSS、MSE-与机器学习中的损失函数" class="headerlink" title="3. RSS、MSE 与机器学习中的损失函数"></a>3. RSS、MSE 与机器学习中的损失函数</h1><h2 id="3-1-RSS-为什么有时要除以-N-？"><a href="#3-1-RSS-为什么有时要除以-N-？" class="headerlink" title="3.1 RSS 为什么有时要除以 $N$？"></a>3.1 RSS 为什么有时要除以 $N$？</h2><p>残差平方和是：</p>
 <p>$$<br>RSS &#x3D; \sum_{i&#x3D;1}^N r_i^2<br>$$</p>
-<p>如果除以样本数量 (N)，得到均方误差：</p>
+<p>如果除以样本数量 $N$，得到均方误差：</p>
 <p>$$<br>MSE &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^N r_i^2<br>$$</p>
-<p>当 (N) 固定时，RSS 和 MSE 只差一个常数倍：</p>
-<h1 id="arg-min-theta-sum-i-r-i-2"><a href="#arg-min-theta-sum-i-r-i-2" class="headerlink" title="$$\arg\min_\theta \sum_i r_i^2"></a>$$<br>\arg\min_\theta \sum_i r_i^2</h1><p>\arg\min_\theta \frac{1}{N}\sum_i r_i^2<br>$$</p>
-<p>所以，如果只是求最优参数，除不除以 (N) 通常不影响最优解。</p>
+<p>当 $N$ 固定时，RSS 和 MSE 只差一个常数倍：</p>
+<p>$$<br>\begin{aligned}<br>\arg\min_\theta \sum_i r_i^2<br>&amp;&#x3D;<br>\arg\min_\theta \frac{1}{N}\sum_i r_i^2<br>\end{aligned}<br>$$</p>
+<p>所以，如果只是求最优参数，除不除以 $N$ 通常不影响最优解。</p>
 <hr>
-<h2 id="3-2-为什么实际中常用-MSE？"><a href="#3-2-为什么实际中常用-MSE？" class="headerlink" title="3.2 为什么实际中常用 MSE？"></a>3.2 为什么实际中常用 MSE？</h2><p>虽然最优解不变，但除以 (N) 有实际意义：</p>
+<h2 id="3-2-为什么实际中常用-MSE？"><a href="#3-2-为什么实际中常用-MSE？" class="headerlink" title="3.2 为什么实际中常用 MSE？"></a>3.2 为什么实际中常用 MSE？</h2><p>虽然最优解不变，但除以 $N$ 有实际意义：</p>
 <table>
 <thead>
 <tr>
@@ -484,9 +484,9 @@
 <p>$$<br>L &#x3D; L_{\text{data}} + \lambda L_{\text{smooth}}<br>$$</p>
 <p>其中：</p>
 <ul>
-<li>(L_{\text{data}})：数据项，要求结果符合观测；</li>
-<li>(L_{\text{smooth}})：平滑项，要求结果不要剧烈变化；</li>
-<li>(\lambda)：权重，控制平滑强度。</li>
+<li>$L_{\text{data}}$：数据项，要求结果符合观测；</li>
+<li>$L_{\text{smooth}}$：平滑项，要求结果不要剧烈变化；</li>
+<li>$\lambda$：权重，控制平滑强度。</li>
 </ul>
 <p>直观理解：</p>
 <blockquote>
@@ -563,50 +563,50 @@
 <p>这些额外要求通常通过 <strong>正则项</strong> 或 <strong>约束项</strong> 加入优化问题。</p>
 <hr>
 <h2 id="5-1-总体形式：加权加入损失函数"><a href="#5-1-总体形式：加权加入损失函数" class="headerlink" title="5.1 总体形式：加权加入损失函数"></a>5.1 总体形式：加权加入损失函数</h2><p>最常见的方式是把正则项加权加到原始损失函数后面：</p>
-<h1 id="L-theta"><a href="#L-theta" class="headerlink" title="$$L(\theta)"></a>$$<br>L(\theta)</h1><p>L_{\text{data}}(\theta)<br>+<br>\lambda L_{\text{reg}}(\theta)<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L(\theta)<br>&amp;&#x3D;<br>L_{\text{data}}(\theta)<br>+<br>\lambda L_{\text{reg}}(\theta)<br>\end{aligned}<br>$$</p>
 <p>如果有多个正则项，可以写成：</p>
-<h1 id="L-theta-1"><a href="#L-theta-1" class="headerlink" title="$$L(\theta)"></a>$$<br>L(\theta)</h1><p>L_{\text{data}}(\theta)<br>+<br>\lambda_1 L_{\text{reg},1}(\theta)<br>+<br>\lambda_2 L_{\text{reg},2}(\theta)<br>+<br>\lambda_3 L_{\text{reg},3}(\theta)<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L(\theta)<br>&amp;&#x3D;<br>L_{\text{data}}(\theta)<br>+<br>\lambda_1 L_{\text{reg},1}(\theta)<br>+<br>\lambda_2 L_{\text{reg},2}(\theta)<br>+<br>\lambda_3 L_{\text{reg},3}(\theta)<br>\end{aligned}<br>$$</p>
 <p>其中：</p>
 <ul>
-<li>(L_{\text{data}})：数据项，要求模型符合观测；</li>
-<li>(L_{\text{reg}})：正则项，要求解满足某种偏好；</li>
-<li>(\lambda)：权重，控制这个正则项的重要程度。</li>
+<li>$L_{\text{data}}$：数据项，要求模型符合观测；</li>
+<li>$L_{\text{reg}}$：正则项，要求解满足某种偏好；</li>
+<li>$\lambda$：权重，控制这个正则项的重要程度。</li>
 </ul>
 <p>$$<br>\lambda<br>$$</p>
 <p>越大，表示这个正则约束越强；<br>$$<br>\lambda<br>$$</p>
 <p>越小，表示这个正则约束越弱。</p>
 <hr>
 <h2 id="5-2-平滑约束作为正则项"><a href="#5-2-平滑约束作为正则项" class="headerlink" title="5.2 平滑约束作为正则项"></a>5.2 平滑约束作为正则项</h2><p>一阶平滑约束可以写成：</p>
-<h1 id="L-text-smooth"><a href="#L-text-smooth" class="headerlink" title="$$L_{\text{smooth}}"></a>$$<br>L_{\text{smooth}}</h1><p>\sum_i (x_{i+1}-x_i)^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{smooth}}<br>&amp;&#x3D;<br>\sum_i (x_{i+1}-x_i)^2<br>\end{aligned}<br>$$</p>
 <p>加入总损失后：</p>
-<h1 id="L"><a href="#L" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda_{\text{smooth}}<br>\sum_i (x_{i+1}-x_i)^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda_{\text{smooth}}<br>\sum_i (x_{i+1}-x_i)^2<br>\end{aligned}<br>$$</p>
 <p>它的含义是：</p>
 <blockquote>
 <p>既要拟合数据，又希望相邻变量不要变化太剧烈。</p>
 </blockquote>
 <p>二阶平滑约束可以写成：</p>
-<h1 id="L-text-smooth-1"><a href="#L-text-smooth-1" class="headerlink" title="$$L_{\text{smooth}}"></a>$$<br>L_{\text{smooth}}</h1><p>\sum_i (x_{i+1}-2x_i+x_{i-1})^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{smooth}}<br>&amp;&#x3D;<br>\sum_i (x_{i+1}-2x_i+x_{i-1})^2<br>\end{aligned}<br>$$</p>
 <p>加入总损失后：</p>
-<h1 id="L-1"><a href="#L-1" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda_{\text{smooth}}<br>\sum_i (x_{i+1}-2x_i+x_{i-1})^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda_{\text{smooth}}<br>\sum_i (x_{i+1}-2x_i+x_{i-1})^2<br>\end{aligned}<br>$$</p>
 <p>它的含义是：</p>
 <blockquote>
 <p>不一定要求相邻值接近，但希望变化趋势不要突然改变。</p>
 </blockquote>
 <hr>
-<h2 id="5-3-参数不要偏离某个常数"><a href="#5-3-参数不要偏离某个常数" class="headerlink" title="5.3 参数不要偏离某个常数"></a>5.3 参数不要偏离某个常数</h2><p>如果希望某个参数 (x) 不要离常数 (c) 太远，可以加一个先验项：</p>
-<h1 id="L-text-prior"><a href="#L-text-prior" class="headerlink" title="$$L_{\text{prior}}"></a>$$<br>L_{\text{prior}}</h1><p>(x-c)^2<br>$$</p>
+<h2 id="5-3-参数不要偏离某个常数"><a href="#5-3-参数不要偏离某个常数" class="headerlink" title="5.3 参数不要偏离某个常数"></a>5.3 参数不要偏离某个常数</h2><p>如果希望某个参数 $x$ 不要离常数 $c$ 太远，可以加一个先验项：</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{prior}}<br>&amp;&#x3D;<br>(x-c)^2<br>\end{aligned}<br>$$</p>
 <p>总损失为：</p>
-<h1 id="L-2"><a href="#L-2" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda_{\text{prior}}(x-c)^2<br>$$</p>
-<p>如果 (x) 是向量，则可以写成：</p>
-<h1 id="L-text-prior-1"><a href="#L-text-prior-1" class="headerlink" title="$$L_{\text{prior}}"></a>$$<br>L_{\text{prior}}</h1><p>|x-c|^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda_{\text{prior}}(x-c)^2<br>\end{aligned}<br>$$</p>
+<p>如果 $x$ 是向量，则可以写成：</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{prior}}<br>&amp;&#x3D;<br>\lVert x-c \rVert^2<br>\end{aligned}<br>$$</p>
 <p>总损失为：</p>
-<h1 id="L-3"><a href="#L-3" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda_{\text{prior}}|x-c|^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda_{\text{prior}}\lVert x-c \rVert^2<br>\end{aligned}<br>$$</p>
 <p>这个项的含义是：</p>
 <blockquote>
-<p>希望参数 (x) 接近某个先验值 (c)，但不一定强制等于 (c)。</p>
+<p>希望参数 $x$ 接近某个先验值 $c$，但不一定强制等于 $c$。</p>
 </blockquote>
-<p>如果 (\lambda_{\text{prior}}) 很小，数据项会主导，(x) 可以偏离 (c)。</p>
-<p>如果 (\lambda_{\text{prior}}) 很大，优化器会强烈倾向于让 (x) 接近 (c)。</p>
+<p>如果 $\lambda_{\text{prior}}$ 很小，数据项会主导，$x$ 可以偏离 $c$。</p>
+<p>如果 $\lambda_{\text{prior}}$ 很大，优化器会强烈倾向于让 $x$ 接近 $c$。</p>
 <hr>
 <h2 id="5-4-bounds-约束：硬约束和软约束"><a href="#5-4-bounds-约束：硬约束和软约束" class="headerlink" title="5.4 bounds 约束：硬约束和软约束"></a>5.4 bounds 约束：硬约束和软约束</h2><p>bounds 约束需要分成两类：<strong>硬约束</strong> 和 <strong>软约束</strong>。</p>
 <hr>
@@ -623,13 +623,13 @@
 <hr>
 <h3 id="5-4-2-软-bounds"><a href="#5-4-2-软-bounds" class="headerlink" title="5.4.2 软 bounds"></a>5.4.2 软 bounds</h3><p>如果不是绝对禁止越界，而是希望参数尽量留在范围内，那么可以把 bounds 写成惩罚项。</p>
 <p>例如只惩罚超过上界的部分：</p>
-<h1 id="L-text-upper"><a href="#L-text-upper" class="headerlink" title="$$L_{\text{upper}}"></a>$$<br>L_{\text{upper}}</h1><p>\max(0, x-b)^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{upper}}<br>&amp;&#x3D;<br>\max(0, x-b)^2<br>\end{aligned}<br>$$</p>
 <p>只惩罚低于下界的部分：</p>
-<h1 id="L-text-lower"><a href="#L-text-lower" class="headerlink" title="$$L_{\text{lower}}"></a>$$<br>L_{\text{lower}}</h1><p>\max(0, a-x)^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{lower}}<br>&amp;&#x3D;<br>\max(0, a-x)^2<br>\end{aligned}<br>$$</p>
 <p>上下界一起写：</p>
-<h1 id="L-text-bound"><a href="#L-text-bound" class="headerlink" title="$$L_{\text{bound}}"></a>$$<br>L_{\text{bound}}</h1><p>\max(0, a-x)^2<br>+<br>\max(0, x-b)^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L_{\text{bound}}<br>&amp;&#x3D;<br>\max(0, a-x)^2<br>+<br>\max(0, x-b)^2<br>\end{aligned}<br>$$</p>
 <p>加入总损失：</p>
-<h1 id="L-4"><a href="#L-4" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda_{\text{bound}}L_{\text{bound}}<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda_{\text{bound}}L_{\text{bound}}<br>\end{aligned}<br>$$</p>
 <p>这种方式称为软约束，因为它并不绝对禁止越界，只是越界会付出代价。</p>
 <hr>
 <h2 id="5-5-在最小二乘中，正则项可以写成额外残差"><a href="#5-5-在最小二乘中，正则项可以写成额外残差" class="headerlink" title="5.5 在最小二乘中，正则项可以写成额外残差"></a>5.5 在最小二乘中，正则项可以写成额外残差</h2><p>如果原始问题是最小二乘：</p>
@@ -637,23 +637,23 @@
 <p>现在想加入一个先验项：</p>
 <p>$$<br>\lambda (x-c)^2<br>$$</p>
 <p>可以把它写成一个新的残差：</p>
-<h1 id="r-text-prior-x"><a href="#r-text-prior-x" class="headerlink" title="$$r_{\text{prior}}(x)"></a>$$<br>r_{\text{prior}}(x)</h1><p>\sqrt{\lambda}(x-c)<br>$$</p>
+<p>$$<br>\begin{aligned}<br>r_{\text{prior}}(x)<br>&amp;&#x3D;<br>\sqrt{\lambda}(x-c)<br>\end{aligned}<br>$$</p>
 <p>因为：</p>
-<h1 id="r-text-prior-x-2"><a href="#r-text-prior-x-2" class="headerlink" title="$$r_{\text{prior}}(x)^2"></a>$$<br>r_{\text{prior}}(x)^2</h1><p>\lambda (x-c)^2<br>$$</p>
+<p>$$<br>\begin{aligned}<br>r_{\text{prior}}(x)^2<br>&amp;&#x3D;<br>\lambda (x-c)^2<br>\end{aligned}<br>$$</p>
 <p>所以总目标可以写成：</p>
 <p>$$<br>\min_x<br>\left[<br>\sum_i r_i(x)^2<br>+<br>\lambda (x-c)^2<br>\right]<br>$$</p>
 <p>也可以写成向量残差形式：</p>
-<p>$$<br>\min_x<br>\left|<br>\begin{bmatrix}<br>r_{\text{data}}(x) \<br>\sqrt{\lambda}(x-c)<br>\end{bmatrix}<br>\right|^2<br>$$</p>
+<p>$$<br>\min_x<br>\left\lVert<br>\begin{bmatrix}<br>r_{\text{data}}(x) \\<br>\sqrt{\lambda}(x-c)<br>\end{bmatrix}<br>\right\rVert^2<br>$$</p>
 <p>这说明，在最小二乘框架里，正则项通常可以被看成额外添加的 residual block。</p>
 <hr>
 <h2 id="5-6-平滑项也可以写成额外残差"><a href="#5-6-平滑项也可以写成额外残差" class="headerlink" title="5.6 平滑项也可以写成额外残差"></a>5.6 平滑项也可以写成额外残差</h2><p>一阶平滑项：</p>
 <p>$$<br>\lambda \sum_i (x_{i+1}-x_i)^2<br>$$</p>
 <p>可以写成一组额外残差：</p>
-<h1 id="r-i-text-smooth"><a href="#r-i-text-smooth" class="headerlink" title="$$r_i^{\text{smooth}}"></a>$$<br>r_i^{\text{smooth}}</h1><p>\sqrt{\lambda}(x_{i+1}-x_i)<br>$$</p>
+<p>$$<br>\begin{aligned}<br>r_i^{\text{smooth}}<br>&amp;&#x3D;<br>\sqrt{\lambda}(x_{i+1}-x_i)<br>\end{aligned}<br>$$</p>
 <p>二阶平滑项：</p>
 <p>$$<br>\lambda \sum_i (x_{i+1}-2x_i+x_{i-1})^2<br>$$</p>
 <p>可以写成一组额外残差：</p>
-<h1 id="r-i-text-smooth-1"><a href="#r-i-text-smooth-1" class="headerlink" title="$$r_i^{\text{smooth}}"></a>$$<br>r_i^{\text{smooth}}</h1><p>\sqrt{\lambda}(x_{i+1}-2x_i+x_{i-1})<br>$$</p>
+<p>$$<br>\begin{aligned}<br>r_i^{\text{smooth}}<br>&amp;&#x3D;<br>\sqrt{\lambda}(x_{i+1}-2x_i+x_{i-1})<br>\end{aligned}<br>$$</p>
 <p>因此在 BA、图优化、Ceres、g2o、GTSAM 这类问题中，很多正则项会被实现成：</p>
 <ul>
 <li>residual block；</li>
@@ -664,41 +664,41 @@
 </ul>
 <p>本质上都是往优化问题里添加新的误差项。</p>
 <hr>
-<h2 id="5-7-权重-lambda-的作用"><a href="#5-7-权重-lambda-的作用" class="headerlink" title="5.7 权重 (\lambda) 的作用"></a>5.7 权重 (\lambda) 的作用</h2><p>正则项的强弱由权重 (\lambda) 控制。</p>
+<h2 id="5-7-权重-lambda-的作用"><a href="#5-7-权重-lambda-的作用" class="headerlink" title="5.7 权重 $\lambda$ 的作用"></a>5.7 权重 $\lambda$ 的作用</h2><p>正则项的强弱由权重 $\lambda$ 控制。</p>
 <p>以先验项为例：</p>
-<h1 id="L-5"><a href="#L-5" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda (x-c)^2<br>$$</p>
-<p>不同 (\lambda) 的含义是：</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda (x-c)^2<br>\end{aligned}<br>$$</p>
+<p>不同 $\lambda$ 的含义是：</p>
 <table>
 <thead>
 <tr>
-<th>(\lambda)</th>
+<th>$\lambda$</th>
 <th>含义</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>(\lambda &#x3D; 0)</td>
+<td>$\lambda &#x3D; 0$</td>
 <td>不使用这个正则项</td>
 </tr>
 <tr>
-<td>(\lambda) 很小</td>
+<td>$\lambda$ 很小</td>
 <td>只是轻微偏好</td>
 </tr>
 <tr>
-<td>(\lambda) 较大</td>
+<td>$\lambda$ 较大</td>
 <td>强烈希望满足</td>
 </tr>
 <tr>
-<td>(\lambda \to \infty)</td>
+<td>$\lambda \to \infty$</td>
 <td>接近硬约束</td>
 </tr>
 </tbody></table>
 <p>所以正则项不是简单地“有没有”，而是通过权重决定它和数据项之间的平衡。</p>
 <hr>
 <h2 id="5-8-统一理解"><a href="#5-8-统一理解" class="headerlink" title="5.8 统一理解"></a>5.8 统一理解</h2><p>一个完整目标函数可以写成：</p>
-<h1 id="L-x"><a href="#L-x" class="headerlink" title="$$L(x)"></a>$$<br>L(x)</h1><p>L_{\text{data}}(x)<br>+<br>L_{\text{prior}}(x)<br>+<br>L_{\text{smooth}}(x)<br>+<br>L_{\text{bound}}(x)<br>+<br>\cdots<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L(x)<br>&amp;&#x3D;<br>L_{\text{data}}(x)<br>+<br>L_{\text{prior}}(x)<br>+<br>L_{\text{smooth}}(x)<br>+<br>L_{\text{bound}}(x)<br>+<br>\cdots<br>\end{aligned}<br>$$</p>
 <p>更一般地：</p>
-<h1 id="L-x-1"><a href="#L-x-1" class="headerlink" title="$$L(x)"></a>$$<br>L(x)</h1><p>\sum_k \lambda_k \phi_k(x)<br>$$</p>
-<p>其中每个 (\phi_k(x)) 表示一种误差、偏好或软约束。</p>
+<p>$$<br>\begin{aligned}<br>L(x)<br>&amp;&#x3D;<br>\sum_k \lambda_k \phi_k(x)<br>\end{aligned}<br>$$</p>
+<p>其中每个 $\phi_k(x)$ 表示一种误差、偏好或软约束。</p>
 <table>
 <thead>
 <tr>
@@ -709,38 +709,38 @@
 </thead>
 <tbody><tr>
 <td>数据项</td>
-<td>(\sum_i (y_i-\hat y_i)^2)</td>
+<td>$\sum_i (y_i-\hat y_i)^2$</td>
 <td>拟合观测</td>
 </tr>
 <tr>
 <td>先验项</td>
-<td>(|x-c|^2)</td>
+<td>$\lVert x-c \rVert^2$</td>
 <td>不要离先验太远</td>
 </tr>
 <tr>
 <td>一阶平滑项</td>
-<td>(\sum_i |x_{i+1}-x_i|^2)</td>
+<td>$\sum_i \lVert x_{i+1}-x_i \rVert^2$</td>
 <td>相邻变量不要跳变</td>
 </tr>
 <tr>
 <td>二阶平滑项</td>
-<td>(\sum_i |x_{i+1}-2x_i+x_{i-1}|^2)</td>
+<td>$\sum_i \lVert x_{i+1}-2x_i+x_{i-1} \rVert^2$</td>
 <td>变化趋势不要突变</td>
 </tr>
 <tr>
 <td>软边界项</td>
-<td>(\max(0,a-x)^2+\max(0,x-b)^2)</td>
+<td>$\max(0,a-x)^2+\max(0,x-b)^2$</td>
 <td>尽量不要越界</td>
 </tr>
 <tr>
 <td>硬边界</td>
-<td>(a \le x \le b)</td>
+<td>$a \le x \le b$</td>
 <td>绝对不能越界</td>
 </tr>
 </tbody></table>
 <hr>
 <h2 id="5-9-小结"><a href="#5-9-小结" class="headerlink" title="5.9 小结"></a>5.9 小结</h2><p>正则项和软约束通常就是加权加入损失函数：</p>
-<h1 id="L-6"><a href="#L-6" class="headerlink" title="$$L"></a>$$<br>L</h1><p>L_{\text{data}}<br>+<br>\lambda L_{\text{reg}}<br>$$</p>
+<p>$$<br>\begin{aligned}<br>L<br>&amp;&#x3D;<br>L_{\text{data}}<br>+<br>\lambda L_{\text{reg}}<br>\end{aligned}<br>$$</p>
 <p>在最小二乘问题中，它们经常被写成额外残差：</p>
 <p>$$<br>r_{\text{reg}} &#x3D; \sqrt{\lambda} \cdot \text{约束误差}<br>$$</p>
 <p>但 bounds 约束要分清楚：</p>
@@ -867,7 +867,7 @@
 <p>原因主要有三个。</p>
 <hr>
 <h2 id="7-1-参数和数据规模太大"><a href="#7-1-参数和数据规模太大" class="headerlink" title="7.1 参数和数据规模太大"></a>7.1 参数和数据规模太大</h2><p>神经网络可能有几百万、几千万甚至几十亿参数。</p>
-<p>如果有 (N) 个样本、(P) 个参数，残差雅可比矩阵规模大致是：</p>
+<p>如果有 $N$ 个样本、$P$ 个参数，残差雅可比矩阵规模大致是：</p>
 <p>$$<br>N \times P<br>$$</p>
 <p>显式构造和求解这样的系统通常不可行。</p>
 <hr>
@@ -895,13 +895,13 @@
 <p>$$<br>\text{稀疏结构}<br>$$</p>
 <hr>
 <h2 id="8-1-BA-是典型非线性最小二乘"><a href="#8-1-BA-是典型非线性最小二乘" class="headerlink" title="8.1 BA 是典型非线性最小二乘"></a>8.1 BA 是典型非线性最小二乘</h2><p>Bundle Adjustment 的目标通常是最小化重投影误差：</p>
-<p>$$<br>\min_{{T_i},{X_j}}<br>\sum_{i,j}<br>\left|u_{ij} - \pi(T_i, X_j)\right|^2<br>$$</p>
+<p>$$<br>\min_{{T_i},{X_j}}<br>\sum_{i,j}<br>\left\lVert u_{ij} - \pi(T_i, X_j)\right\rVert^2<br>$$</p>
 <p>其中：</p>
 <ul>
-<li>(T_i)：相机位姿</li>
-<li>(X_j)：三维点</li>
-<li>(u_{ij})：观测到的图像点</li>
-<li>(\pi(T_i, X_j))：投影模型</li>
+<li>$T_i$：相机位姿</li>
+<li>$X_j$：三维点</li>
+<li>$u_{ij}$：观测到的图像点</li>
+<li>$\pi(T_i, X_j)$：投影模型</li>
 </ul>
 <p>这正是：</p>
 <p>$$<br>\min_x \sum_k r_k(x)^2<br>$$</p>
@@ -934,14 +934,14 @@
 <p>因此矩阵可以按 block 组织，而不是当作普通稠密矩阵处理。</p>
 <hr>
 <h2 id="8-4-Schur-Complement-是-BA-的关键"><a href="#8-4-Schur-Complement-是-BA-的关键" class="headerlink" title="8.4 Schur Complement 是 BA 的关键"></a>8.4 Schur Complement 是 BA 的关键</h2><p>BA 中线性化后会得到系统：</p>
-<h1 id="begin-bmatrix-H-cc-H-cp-H-pc-H-pp-end-bmatrix-begin-bmatrix-Delta-c-Delta-p-end-bmatrix"><a href="#begin-bmatrix-H-cc-H-cp-H-pc-H-pp-end-bmatrix-begin-bmatrix-Delta-c-Delta-p-end-bmatrix" class="headerlink" title="$$\begin{bmatrix}H_{cc} &amp; H_{cp}\H_{pc} &amp; H_{pp}\end{bmatrix}\begin{bmatrix}\Delta c\\Delta p\end{bmatrix}"></a>$$<br>\begin{bmatrix}<br>H_{cc} &amp; H_{cp}\<br>H_{pc} &amp; H_{pp}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\Delta c\<br>\Delta p<br>\end{bmatrix}</h1><p>\begin{bmatrix}<br>b_c\<br>b_p<br>\end{bmatrix}<br>$$</p>
+<p>$$<br>\begin{aligned}<br>\begin{bmatrix}<br>H_{cc} &amp; H_{cp}\\<br>H_{pc} &amp; H_{pp}<br>\end{bmatrix}<br>\begin{bmatrix}<br>\Delta c\\<br>\Delta p<br>\end{bmatrix}<br>&amp;&#x3D;<br>\begin{bmatrix}<br>b_c\\<br>b_p<br>\end{bmatrix}<br>\end{aligned}<br>$$</p>
 <p>其中：</p>
 <ul>
-<li>(c)：相机变量</li>
-<li>(p)：点变量</li>
+<li>$c$：相机变量</li>
+<li>$p$：点变量</li>
 </ul>
-<p>由于点和点之间通常不直接相连，(H_{pp}) 具有很好的块对角结构，可以先消去点变量，得到只关于相机变量的系统：</p>
-<h1 id="H-cc-H-cp-H-pp-1-H-pc-Delta-c"><a href="#H-cc-H-cp-H-pp-1-H-pc-Delta-c" class="headerlink" title="$$(H_{cc} - H_{cp}H_{pp}^{-1}H_{pc})\Delta c"></a>$$<br>(H_{cc} - H_{cp}H_{pp}^{-1}H_{pc})\Delta c</h1><p>b_c - H_{cp}H_{pp}^{-1}b_p<br>$$</p>
+<p>由于点和点之间通常不直接相连，$H_{pp}$ 具有很好的块对角结构，可以先消去点变量，得到只关于相机变量的系统：</p>
+<p>$$<br>\begin{aligned}<br>(H_{cc} - H_{cp}H_{pp}^{-1}H_{pc})\Delta c<br>&amp;&#x3D;<br>b_c - H_{cp}H_{pp}^{-1}b_p<br>\end{aligned}<br>$$</p>
 <p>这就是 Schur Complement。</p>
 <p>它让大规模 BA 仍然可以高效求解。</p>
 <hr>
