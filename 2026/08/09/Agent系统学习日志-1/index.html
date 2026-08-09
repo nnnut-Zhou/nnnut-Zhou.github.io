@@ -19,21 +19,21 @@
   <meta name="author" content="Lee Chou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="面对知识更新加快、技能快速贬值的时代背景，焦虑是没有用的。我们需要想方设法提高自己快速学习的能力。 偶然间刷到了闪客的视频，跟这个话题比较契合，视频观点简单记录了一些。虽然他主要分享的是自己学习AI方面知识的经验，但方法背后的道理是共通的，可以迁移到其他学习过程中。   以自己舒服的方式学习。每个人的习惯不同，可能有些人适合跟别人讨论，有些人适合看视频、看文章，总之没有通用的方法。  信息路由的">
+    <meta name="description" content="相对于工作流Workflow，智能体Agent的核心特征：工作路径不是提前定好，而是由LLM根据情况实时决定的  只有问题足够复杂、规则难以维护、依赖非结构性交互的时候，才需要构造智能体  智能体的三个核心部分：模型Model、工具Tools、提示词Instructions  简单的任务可以用更小的模型；推荐一开始所有任务都用强模型，先确定基准，再逐渐逐个模块替换为弱模型，从而优化成本  智能体">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在AI时代如何快速学习（笔记）">
-<meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/08/%E7%AC%94%E8%AE%B0-%E5%85%B3%E4%BA%8E%E5%9C%A8AI%E6%97%B6%E4%BB%A3%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="Agent系统学习日志-1">
+<meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/09/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-1/index.html">
 <meta property="og:site_name" content="Lee的博客">
-<meta property="og:description" content="面对知识更新加快、技能快速贬值的时代背景，焦虑是没有用的。我们需要想方设法提高自己快速学习的能力。 偶然间刷到了闪客的视频，跟这个话题比较契合，视频观点简单记录了一些。虽然他主要分享的是自己学习AI方面知识的经验，但方法背后的道理是共通的，可以迁移到其他学习过程中。   以自己舒服的方式学习。每个人的习惯不同，可能有些人适合跟别人讨论，有些人适合看视频、看文章，总之没有通用的方法。  信息路由的">
+<meta property="og:description" content="相对于工作流Workflow，智能体Agent的核心特征：工作路径不是提前定好，而是由LLM根据情况实时决定的  只有问题足够复杂、规则难以维护、依赖非结构性交互的时候，才需要构造智能体  智能体的三个核心部分：模型Model、工具Tools、提示词Instructions  简单的任务可以用更小的模型；推荐一开始所有任务都用强模型，先确定基准，再逐渐逐个模块替换为弱模型，从而优化成本  智能体">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-08-08T13:17:12.000Z">
-<meta property="article:modified_time" content="2026-08-08T13:21:21.469Z">
+<meta property="article:published_time" content="2026-08-09T09:37:43.000Z">
+<meta property="article:modified_time" content="2026-08-09T09:40:07.374Z">
 <meta property="article:author" content="Lee Chou">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>在AI时代如何快速学习（笔记） - Lee的博客</title>
+  <title>Agent系统学习日志-1 - Lee的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -250,7 +250,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="在AI时代如何快速学习（笔记）"></span>
+            <span id="subtitle" data-typed-text="Agent系统学习日志-1"></span>
           
         </div>
 
@@ -261,8 +261,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2026-08-08 21:17" pubdate>
-          2026年8月8日 晚上
+        <time datetime="2026-08-09 17:37" pubdate>
+          2026年8月9日 下午
         </time>
       </span>
     
@@ -273,7 +273,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          852 字
+          648 字
         
       </span>
     
@@ -284,7 +284,7 @@
         
         
         
-          8 分钟
+          6 分钟
         
       </span>
     
@@ -323,41 +323,48 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">在AI时代如何快速学习（笔记）</h1>
+            <h1 id="seo-header">Agent系统学习日志-1</h1>
             
             
               <div class="markdown-body">
                 
-                <blockquote>
-<p>面对知识更新加快、技能快速贬值的时代背景，焦虑是没有用的。我们需要想方设法提高自己快速学习的能力。</p>
-<p>偶然间刷到了闪客的视频，跟这个话题比较契合，视频观点简单记录了一些。虽然他主要分享的是自己学习AI方面知识的经验，但方法背后的道理是共通的，可以迁移到其他学习过程中。</p>
-</blockquote>
+                <ol>
+<li><p>相对于工作流Workflow，智能体Agent的核心特征：工作路径不是提前定好，而是由LLM根据情况实时决定的</p>
+</li>
+<li><p>只有问题足够复杂、规则难以维护、依赖非结构性交互的时候，才需要构造智能体</p>
+</li>
+<li><p>智能体的三个核心部分：模型Model、工具Tools、提示词Instructions</p>
+<ul>
+<li><p>简单的任务可以用更小的模型；推荐一开始所有任务都用强模型，先确定基准，再逐渐逐个模块替换为弱模型，从而优化成本</p>
+</li>
+<li><p>智能体需要三种类型的工具：</p>
 <ol>
-<li><p>以自己舒服的方式学习。每个人的习惯不同，可能有些人适合跟别人讨论，有些人适合看视频、看文章，总之没有通用的方法。</p>
+<li>数据Data，例如数据库、网络搜索、文档读取</li>
+<li>行动Action，例如发送电子邮件、转交工单</li>
+<li>编排Orchestration，智能体本身也可作为工具，例如写作智能体、调研智能体</li>
+</ol>
 </li>
-<li><p>信息路由的能力。搜索信息全部依赖AI是不妥的，需要根据不同的目标来对应信息源：</p>
-<ul>
-<li><p>如果追求宏观理解，需要一些高屋建瓴的观点，综合不同领域的知识，那么<strong>优质博主</strong>往往有比较好的选择。例如卡帕西、ahead of ai  网站。一方面，相对于直接问AI，在这些信息路由的基础上进行的分析更可信，AI回答中一点点的幻觉可能就会造成信息的不真实，分析的失误；另一方面相对于直接看一手的文档，通过信息路由能节省大量时间，且我们本身就处在信息劣势，不如这些博主的知识渊博，自己收集的话容易眼光过于狭隘。</p>
-</li>
-<li><p>如果追求精确的事实，那么应该优先看<strong>官方文档</strong>，比如官方的技术手册、论文原文。</p>
-</li>
-<li><p>如果想在横纵向进行对比，用<strong>AI协助</strong>是比较好的。AI的本质决定了它适合在大量数据中找到关联。</p>
-</li>
-<li><p>如果是针对一些专属问题，这些问题很难找到公开的资料，或者想了解也不知从何处着手，也适合借助AI。相当于一个老师，帮忙做了信息索引这一步，明确学习路径。</p>
-</li>
-<li><p>如果是漫无目的地信息获取，也就是那些我们不知道自己不知道的知识，则可以借助<strong>播客、聚合信息网站</strong>获取。比如张小珺商业访谈录、AI HOT 日报。</p>
+<li><p>提示词可以借助其他高级模型来生成，几个tips：使用现有文档、分解成小任务减少歧义、明确操作步骤、注意边界情况</p>
 </li>
 </ul>
 </li>
-<li><p>快速学习的方法</p>
+<li><p>智能体的编排，可以分为单智能体系统和多智能体系统</p>
 <ul>
-<li><p>提升学习的加速度而不是速度。是追求当下的速度，还是先打好基础、提升，追求未来更大的增量，对于这个权衡的回答。“不要在很短的时间线中跟别人比，而是把时间线拉长”。</p>
+<li><p>单智能体以循环调用的方式能够解决大部分问题，当以下情况出现时可以考虑搭建多智能体系统：</p>
+<ol>
+<li>逻辑复杂，提示词中包含很多分支语句，模板难以扩展</li>
+<li>工具过载，工具数量太多，或者它们之间功能有重叠</li>
+</ol>
 </li>
-<li><p>把主要精力浪费在通用知识上。也就是那些能够稳定不变的东西，而不是持续变化的东西。这样一门新的知识就可以只依靠diff增加到原有的知识体系中。</p>
-</li>
-<li><p>如何描述一个新知识？养成增量描述的思维习惯：一个新概念&#x3D;不变的底层+变化的增量。</p>
+<li><p>广泛使用两种设计模式来搭建多智能体系统：</p>
+<ol>
+<li>Manager，由一个中央管理器智能体来调用其他智能体，也就是把其他智能体作为可调用的工具</li>
+<li>Decentrallzed，智能体之间是对等的关系，根据各自的专长交接任务</li>
+</ol>
 </li>
 </ul>
+</li>
+<li><p>几种类型的围栏：相关性分类器（标记话题无关内容）、安全分类器（检测越狱输入）、个人敏感信息过滤、有害信息检测（暴力、仇恨言论等）、工具安全（工具权限、风险管理）、长度限制、价值观等等</p>
 </li>
 </ol>
 
@@ -377,8 +384,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>在AI时代如何快速学习（笔记）</div>
-      <div>https://nnnut-zhou.github.io/2026/08/08/笔记-关于在AI时代如何快速学习/</div>
+      <div>Agent系统学习日志-1</div>
+      <div>https://nnnut-zhou.github.io/2026/08/09/Agent系统学习日志-1/</div>
     </div>
     <div class="license-meta">
       
@@ -390,7 +397,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2026年8月8日</div>
+          <div>2026年8月9日</div>
         </div>
       
       
@@ -422,18 +429,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/08/09/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-1/" title="Agent系统学习日志-1">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Agent系统学习日志-1</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/08/02/3S%E5%8E%9F%E5%88%99/" title="3S原则">
-                        <span class="hidden-mobile">3S原则</span>
+                      <a href="/2026/08/08/%E7%AC%94%E8%AE%B0-%E5%85%B3%E4%BA%8E%E5%9C%A8AI%E6%97%B6%E4%BB%A3%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AD%A6%E4%B9%A0/" title="在AI时代如何快速学习（笔记）">
+                        <span class="hidden-mobile">在AI时代如何快速学习（笔记）</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
