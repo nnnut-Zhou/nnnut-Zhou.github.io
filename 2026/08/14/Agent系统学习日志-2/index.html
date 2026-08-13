@@ -19,21 +19,21 @@
   <meta name="author" content="Lee Chou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="相对于工作流Workflow，智能体Agent的核心特征：工作路径不是提前定好，而是由LLM根据情况实时决定的  只有问题足够复杂、规则难以维护、依赖非结构性交互的时候，才需要构造智能体  智能体的三个核心部分：模型Model、工具Tools、提示词Instructions  简单的任务可以用更小的模型；推荐一开始所有任务都用强模型，先确定基准，再逐渐逐个模块替换为弱模型，从而优化成本  智能体">
+    <meta name="description" content="不论是 Claude、OpenAI、Gemini 还是 Doubao，在 Agent 的基本工作方式上其实非常相似。模型调用、上下文数据格式以及 Tool 的引用方式虽然在具体 SDK 上有所差异，但整体流程基本一致： 每次调用 LLM 时，都需要提供当前的上下文（Context）以及模型当前可以使用的工具（Tools）。 例如： 123456789101112131415161718192021">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Agent系统学习日志-1">
-<meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/09/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-1/index.html">
+<meta property="og:title" content="Agent系统学习日志-2">
+<meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/14/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-2/index.html">
 <meta property="og:site_name" content="Lee的博客">
-<meta property="og:description" content="相对于工作流Workflow，智能体Agent的核心特征：工作路径不是提前定好，而是由LLM根据情况实时决定的  只有问题足够复杂、规则难以维护、依赖非结构性交互的时候，才需要构造智能体  智能体的三个核心部分：模型Model、工具Tools、提示词Instructions  简单的任务可以用更小的模型；推荐一开始所有任务都用强模型，先确定基准，再逐渐逐个模块替换为弱模型，从而优化成本  智能体">
+<meta property="og:description" content="不论是 Claude、OpenAI、Gemini 还是 Doubao，在 Agent 的基本工作方式上其实非常相似。模型调用、上下文数据格式以及 Tool 的引用方式虽然在具体 SDK 上有所差异，但整体流程基本一致： 每次调用 LLM 时，都需要提供当前的上下文（Context）以及模型当前可以使用的工具（Tools）。 例如： 123456789101112131415161718192021">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-08-09T09:37:43.000Z">
-<meta property="article:modified_time" content="2026-08-09T09:44:03.558Z">
+<meta property="article:published_time" content="2026-08-13T16:09:25.000Z">
+<meta property="article:modified_time" content="2026-08-13T16:26:20.117Z">
 <meta property="article:author" content="Lee Chou">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Agent系统学习日志-1 - Lee的博客</title>
+  <title>Agent系统学习日志-2 - Lee的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -250,7 +250,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Agent系统学习日志-1"></span>
+            <span id="subtitle" data-typed-text="Agent系统学习日志-2"></span>
           
         </div>
 
@@ -261,8 +261,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2026-08-09 17:37" pubdate>
-          2026年8月9日 下午
+        <time datetime="2026-08-14 00:09" pubdate>
+          2026年8月14日 凌晨
         </time>
       </span>
     
@@ -273,7 +273,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          648 字
+          2.1k 字
         
       </span>
     
@@ -284,7 +284,7 @@
         
         
         
-          6 分钟
+          18 分钟
         
       </span>
     
@@ -323,50 +323,37 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Agent系统学习日志-1</h1>
+            <h1 id="seo-header">Agent系统学习日志-2</h1>
             
             
               <div class="markdown-body">
                 
-                <ol>
-<li><p>相对于工作流Workflow，智能体Agent的核心特征：工作路径不是提前定好，而是由LLM根据情况实时决定的</p>
-</li>
-<li><p>只有问题足够复杂、规则难以维护、依赖非结构性交互的时候，才需要构造智能体</p>
-</li>
-<li><p>智能体的三个核心部分：模型Model、工具Tools、提示词Instructions</p>
+                <p>不论是 Claude、OpenAI、Gemini 还是 Doubao，在 Agent 的基本工作方式上其实非常相似。模型调用、上下文数据格式以及 Tool 的引用方式虽然在具体 SDK 上有所差异，但整体流程基本一致：</p>
+<p><strong>每次调用 LLM 时，都需要提供当前的上下文（Context）以及模型当前可以使用的工具（Tools）。</strong></p>
+<p>例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python">tools_schema = [<br>    &#123;<br>        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>,<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;get_weather&quot;</span>,<br>        <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;获取指定城市的实时天气信息&quot;</span>,<br>        <span class="hljs-string">&quot;parameters&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br>            <span class="hljs-string">&quot;properties&quot;</span>: &#123;<br>                <span class="hljs-string">&quot;location&quot;</span>: &#123;<br>                    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>,<br>                    <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;城市名称，例如：北京、上海&quot;</span><br>                &#125;<br>            &#125;,<br>            <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;location&quot;</span>]<br>        &#125;<br>    &#125;<br>]<br><br>response = client.responses.create(<br>    model=<span class="hljs-string">&quot;deepseek-v4-flash&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;你是一个对话机器人&quot;</span>,<br>    <span class="hljs-built_in">input</span>=messages,          <span class="hljs-comment"># 包含历史上下文的消息列表</span><br>    tools=tools_schema,      <span class="hljs-comment"># 当前可调用的工具列表</span><br>    stream=<span class="hljs-literal">False</span>,<br>    extra_body=&#123;<br>        <span class="hljs-string">&quot;reasoning&quot;</span>: &#123;<span class="hljs-string">&quot;effort&quot;</span>: <span class="hljs-string">&quot;none&quot;</span>&#125;,<br>    &#125;<br>)<br></code></pre></td></tr></table></figure>
+
+<p>当模型判断需要调用某个工具时，并不会直接执行工具，而是在响应中返回一个 <code>type=&quot;function_call&quot;</code> 的项。</p>
+<p>服务端接收到这个 <code>function_call</code> 后，需要完成以下几步：</p>
+<ol>
+<li>将模型返回的 Tool Call 加入上下文；</li>
+<li>根据模型提供的函数名和参数，实际执行对应的工具；</li>
+<li>将工具执行结果再次加入上下文；</li>
+<li>把更新后的上下文重新发送给 LLM。</li>
+</ol>
+<p>例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 处理工具调用</span><br>tool_calls = [<br>    item <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> response.output<br>    <span class="hljs-keyword">if</span> item.<span class="hljs-built_in">type</span> == <span class="hljs-string">&quot;function_call&quot;</span><br>]<br><br><span class="hljs-keyword">if</span> tool_calls:<br>    <span class="hljs-comment"># 将模型的 tool call 加入上下文</span><br>    messages.extend(response.output)<br><br>    <span class="hljs-comment"># 执行所有 tool call</span><br>    <span class="hljs-keyword">for</span> tool_call <span class="hljs-keyword">in</span> tool_calls:<br>        func_name = tool_call.name<br>        func_args = json.loads(tool_call.arguments)<br><br>        <span class="hljs-built_in">print</span>(<br>            <span class="hljs-string">f&quot;[info] 模型决定调用工具: &quot;</span><br>            <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;func_name&#125;</span>，参数: <span class="hljs-subst">&#123;func_args&#125;</span>&quot;</span><br>        )<br><br>        result = <span class="hljs-literal">None</span><br><br>        <span class="hljs-keyword">if</span> func_name == <span class="hljs-string">&quot;get_weather&quot;</span>:<br>            result = get_weather(<br>                location=func_args.get(<span class="hljs-string">&quot;location&quot;</span>)<br>            )<br><br>        <span class="hljs-built_in">print</span>(<br>            <span class="hljs-string">f&quot;[info] 工具 <span class="hljs-subst">&#123;func_name&#125;</span> 运行结果: &quot;</span><br>            <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;json.loads(result)&#125;</span>&quot;</span><br>        )<br><br>        <span class="hljs-comment"># 将工具执行结果加入上下文</span><br>        messages.append(&#123;<br>            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function_call_output&quot;</span>,<br>            <span class="hljs-string">&quot;call_id&quot;</span>: tool_call.call_id,<br>            <span class="hljs-string">&quot;output&quot;</span>: <span class="hljs-built_in">str</span>(result)<br>        &#125;)<br><br>    <span class="hljs-comment"># 将更新后的 messages 再次发送给 LLM</span><br>    <span class="hljs-comment"># ...</span><br></code></pre></td></tr></table></figure>
+
+<p>模型拿到工具返回的结果后，会基于新的上下文继续进行推理：</p>
 <ul>
-<li><p>简单的任务可以用更小的模型；推荐一开始所有任务都用强模型，先确定基准，再逐渐逐个模块替换为弱模型，从而优化成本</p>
-</li>
-<li><p>智能体需要三种类型的工具：</p>
-<ol>
-<li>数据Data，例如数据库、网络搜索、文档读取</li>
-<li>行动Action，例如发送电子邮件、转交工单</li>
-<li>编排Orchestration，智能体本身也可作为工具，例如写作智能体、调研智能体</li>
-</ol>
-</li>
-<li><p>提示词可以借助其他高级模型来生成，几个tips：使用现有文档、分解成小任务减少歧义、明确操作步骤、注意边界情况</p>
-</li>
+<li>如果还需要更多信息，就继续调用工具；</li>
+<li>如果已经获得足够的信息，就生成最终回答。</li>
 </ul>
-</li>
-<li><p>智能体的编排，可以分为单智能体系统和多智能体系统</p>
-<ul>
-<li><p>单智能体以循环调用的方式能够解决大部分问题，当以下情况出现时可以考虑搭建多智能体系统：</p>
-<ol>
-<li>逻辑复杂，提示词中包含很多分支语句，模板难以扩展</li>
-<li>工具过载，工具数量太多，或者它们之间功能有重叠</li>
-</ol>
-</li>
-<li><p>广泛使用两种设计模式来搭建多智能体系统：</p>
-<ol>
-<li>Manager，由一个中央管理器智能体来调用其他智能体，也就是把其他智能体作为可调用的工具</li>
-<li>Decentrallzed，智能体之间是对等的关系，根据各自的专长交接任务</li>
-</ol>
-</li>
-</ul>
-</li>
-<li><p>几种类型的围栏：相关性分类器（标记话题无关内容）、安全分类器（检测越狱输入）、个人敏感信息过滤、有害信息检测（暴力、仇恨言论等）、工具安全（工具权限、风险管理）、长度限制、价值观等等</p>
-</li>
-</ol>
+<p>因此，Agent 的核心其实就是这样一个不断迭代的循环：</p>
+<p><strong>LLM → Tool Call → Tool Execution → Tool Result → LLM → …</strong></p>
+<p>从更经典的 Agent 视角来看，这对应 ReAct 论文中所描述的：</p>
+<p><strong>Thought → Action → Observation → Thought → …</strong></p>
+<p>也就是说，所谓的 Agent Loop，本质上就是让模型在<strong>推理、行动、观察结果</strong>之间不断循环，直到模型认为当前任务已经完成。</p>
 
                 
               </div>
@@ -384,8 +371,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Agent系统学习日志-1</div>
-      <div>https://nnnut-zhou.github.io/2026/08/09/Agent系统学习日志-1/</div>
+      <div>Agent系统学习日志-2</div>
+      <div>https://nnnut-zhou.github.io/2026/08/14/Agent系统学习日志-2/</div>
     </div>
     <div class="license-meta">
       
@@ -397,7 +384,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2026年8月9日</div>
+          <div>2026年8月14日</div>
         </div>
       
       
@@ -429,18 +416,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/08/14/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-2/" title="Agent系统学习日志-2">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Agent系统学习日志-2</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/08/08/%E7%AC%94%E8%AE%B0-%E5%85%B3%E4%BA%8E%E5%9C%A8AI%E6%97%B6%E4%BB%A3%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AD%A6%E4%B9%A0/" title="在AI时代如何快速学习">
-                        <span class="hidden-mobile">在AI时代如何快速学习</span>
+                      <a href="/2026/08/09/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-1/" title="Agent系统学习日志-1">
+                        <span class="hidden-mobile">Agent系统学习日志-1</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
