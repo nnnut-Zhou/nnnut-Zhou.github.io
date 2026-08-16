@@ -19,15 +19,15 @@
   <meta name="author" content="Lee Chou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="这周末快速浏览了一遍 learn-claude-code 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。 s01：经典 Agent 循环s02：工具路由对工具调用逻辑进行封装。 原本是根据工具名称通过一系列 if 判断选择执行逻辑，现在改为从 tool_handlers 工具路由表中查找对应的处理函数。 s03：权限控制在工具调">
+    <meta name="description" content="这周末快速浏览了一遍 learn-claude-code 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。  s01：经典 Agent 循环s02：工具路由对工具调用逻辑进行封装。 原本是根据工具名称通过一系列 if 判断选择执行逻辑，现在改为从 tool_handlers 工具路由表中查找对应的处理函数。 s03：权限控制在工">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Agent系统学习日志-3">
 <meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/16/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-3/index.html">
 <meta property="og:site_name" content="Lee的博客">
-<meta property="og:description" content="这周末快速浏览了一遍 learn-claude-code 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。 s01：经典 Agent 循环s02：工具路由对工具调用逻辑进行封装。 原本是根据工具名称通过一系列 if 判断选择执行逻辑，现在改为从 tool_handlers 工具路由表中查找对应的处理函数。 s03：权限控制在工具调">
+<meta property="og:description" content="这周末快速浏览了一遍 learn-claude-code 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。  s01：经典 Agent 循环s02：工具路由对工具调用逻辑进行封装。 原本是根据工具名称通过一系列 if 判断选择执行逻辑，现在改为从 tool_handlers 工具路由表中查找对应的处理函数。 s03：权限控制在工">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-08-16T15:18:45.000Z">
-<meta property="article:modified_time" content="2026-08-16T15:23:17.028Z">
+<meta property="article:modified_time" content="2026-08-16T15:29:51.964Z">
 <meta property="article:author" content="Lee Chou">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -336,7 +336,9 @@
             
               <div class="markdown-body">
                 
-                <p>这周末快速浏览了一遍 <code>learn-claude-code</code> 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。</p>
+                <blockquote>
+<p>这周末快速浏览了一遍 <code>learn-claude-code</code> 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。</p>
+</blockquote>
 <h3 id="s01：经典-Agent-循环"><a href="#s01：经典-Agent-循环" class="headerlink" title="s01：经典 Agent 循环"></a>s01：经典 Agent 循环</h3><h3 id="s02：工具路由"><a href="#s02：工具路由" class="headerlink" title="s02：工具路由"></a>s02：工具路由</h3><p>对工具调用逻辑进行封装。</p>
 <p>原本是根据工具名称通过一系列 <code>if</code> 判断选择执行逻辑，现在改为从 <code>tool_handlers</code> 工具路由表中查找对应的处理函数。</p>
 <h3 id="s03：权限控制"><a href="#s03：权限控制" class="headerlink" title="s03：权限控制"></a>s03：权限控制</h3><p>在工具调用前加入权限判断，大致包含三道闸门：</p>
