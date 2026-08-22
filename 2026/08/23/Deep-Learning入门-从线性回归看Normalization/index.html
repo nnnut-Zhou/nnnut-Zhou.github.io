@@ -19,21 +19,21 @@
   <meta name="author" content="Lee Chou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="这周末快速浏览了一遍 learn-claude-code 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。  s01：经典 Agent 循环s02：工具路由对工具调用逻辑进行封装。 原本是根据工具名称通过一系列 if 判断选择执行逻辑，现在改为从 tool_handlers 工具路由表中查找对应的处理函数。 s03：权限控制在工">
+    <meta name="description" content="考虑如下线性回归模型： $$\hat{y}_{i}&#x3D;wx_{i}+b$$ 其损失函数为： $$L&#x3D;\frac{1}{2N}\sum_{i&#x3D;1}^{N}(\hat{y}_{i}-y_{i})^2$$ 可以分别求出 $L$ 关于 $w$ 和 $b$ 的偏导。 $$\begin{aligned}\operatorname{grad}_{w}&amp;&#x3D;\frac{">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Agent系统学习日志-3">
-<meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/16/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-3/index.html">
+<meta property="og:title" content="从线性回归看Normalization">
+<meta property="og:url" content="https://nnnut-zhou.github.io/2026/08/23/Deep-Learning%E5%85%A5%E9%97%A8-%E4%BB%8E%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%9C%8BNormalization/index.html">
 <meta property="og:site_name" content="Lee的博客">
-<meta property="og:description" content="这周末快速浏览了一遍 learn-claude-code 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。  s01：经典 Agent 循环s02：工具路由对工具调用逻辑进行封装。 原本是根据工具名称通过一系列 if 判断选择执行逻辑，现在改为从 tool_handlers 工具路由表中查找对应的处理函数。 s03：权限控制在工">
+<meta property="og:description" content="考虑如下线性回归模型： $$\hat{y}_{i}&#x3D;wx_{i}+b$$ 其损失函数为： $$L&#x3D;\frac{1}{2N}\sum_{i&#x3D;1}^{N}(\hat{y}_{i}-y_{i})^2$$ 可以分别求出 $L$ 关于 $w$ 和 $b$ 的偏导。 $$\begin{aligned}\operatorname{grad}_{w}&amp;&#x3D;\frac{">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-08-16T15:18:45.000Z">
-<meta property="article:modified_time" content="2026-08-16T15:29:51.964Z">
+<meta property="article:published_time" content="2026-08-22T16:37:44.000Z">
+<meta property="article:modified_time" content="2026-08-22T17:03:19.198Z">
 <meta property="article:author" content="Lee Chou">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Agent系统学习日志-3 - Lee的博客</title>
+  <title>从线性回归看Normalization - Lee的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -254,7 +254,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Agent系统学习日志-3"></span>
+            <span id="subtitle" data-typed-text="从线性回归看Normalization"></span>
           
         </div>
 
@@ -265,8 +265,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2026-08-16 23:18" pubdate>
-          2026年8月16日 晚上
+        <time datetime="2026-08-23 00:37" pubdate>
+          2026年8月23日 凌晨
         </time>
       </span>
     
@@ -277,7 +277,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.4k 字
+          2.7k 字
         
       </span>
     
@@ -288,7 +288,7 @@
         
         
         
-          12 分钟
+          23 分钟
         
       </span>
     
@@ -331,88 +331,64 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Agent系统学习日志-3</h1>
+            <h1 id="seo-header">从线性回归看Normalization</h1>
             
             
               <div class="markdown-body">
                 
-                <blockquote>
-<p>这周末快速浏览了一遍 <code>learn-claude-code</code> 项目。Agent 本身并没有涉及太多复杂算法，重点主要在于整体架构和能力逐步演进的设计思路。下面按章节简单记录一下。</p>
-</blockquote>
-<h3 id="s01：经典-Agent-循环"><a href="#s01：经典-Agent-循环" class="headerlink" title="s01：经典 Agent 循环"></a>s01：经典 Agent 循环</h3><h3 id="s02：工具路由"><a href="#s02：工具路由" class="headerlink" title="s02：工具路由"></a>s02：工具路由</h3><p>对工具调用逻辑进行封装。</p>
-<p>原本是根据工具名称通过一系列 <code>if</code> 判断选择执行逻辑，现在改为从 <code>tool_handlers</code> 工具路由表中查找对应的处理函数。</p>
-<h3 id="s03：权限控制"><a href="#s03：权限控制" class="headerlink" title="s03：权限控制"></a>s03：权限控制</h3><p>在工具调用前加入权限判断，大致包含三道闸门：</p>
-<ol>
-<li>始终拒绝执行的命令；</li>
-<li>命中特定规则时，需要询问用户；</li>
-<li>由用户进行最终审批。</li>
-</ol>
-<h3 id="s04：Hook-机制"><a href="#s04：Hook-机制" class="headerlink" title="s04：Hook 机制"></a>s04：Hook 机制</h3><p>引入 Hook，将权限判断、日志记录和结果后处理等逻辑拆分到不同的生命周期节点中，例如：</p>
+                <p>考虑如下线性回归模型：</p>
+<p>$$<br>\hat{y}_{i}&#x3D;wx_{i}+b<br>$$</p>
+<p>其损失函数为：</p>
+<p>$$<br>L&#x3D;<br>\frac{1}{2N}<br>\sum_{i&#x3D;1}^{N}<br>(\hat{y}_{i}-y_{i})^2<br>$$</p>
+<p>可以分别求出 $L$ 关于 $w$ 和 $b$ 的偏导。</p>
+<p>$$<br>\begin{aligned}<br>\operatorname{grad}_{w}<br>&amp;&#x3D;<br>\frac{\partial L}{\partial w}<br>\\<br>&amp;&#x3D;<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}<br>\frac{\partial \ell_{i}}{\partial \hat{y}_{i}}<br>\frac{\partial \hat{y}_{i}}{\partial w}<br>\\<br>&amp;&#x3D;<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}<br>(\hat{y}_{i}-y_{i})x_{i}<br>\end{aligned}<br>$$</p>
+<p>$$<br>\begin{aligned}<br>\operatorname{grad}_{b}<br>&amp;&#x3D;<br>\frac{\partial L}{\partial b}<br>\\<br>&amp;&#x3D;<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}<br>\frac{\partial \ell_{i}}{\partial \hat{y}_{i}}<br>\frac{\partial \hat{y}_{i}}{\partial b}<br>\\<br>&amp;&#x3D;<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}<br>(\hat{y}_{i}-y_{i})<br>\end{aligned}<br>$$</p>
+<p>单纯从梯度公式可以看出，相比于 $b$，$w$ 的梯度还会额外受到输入 $x_{i}$ 的影响。</p>
+<p>如果一批数据中的 $x_{i}$ 普遍较大，那么 $w$ 的梯度也可能很大。此时学习率稍大，$w$ 的更新幅度就可能过大，导致训练过程震荡甚至发散。</p>
+<p>如果为了稳定 $w$ 的更新而调小学习率，$b$ 的更新又会变得很慢，只能通过增加训练轮数来弥补。</p>
+<p>反过来，如果 $x_{i}$ 普遍很小，$w$ 的梯度也会很小，导致 $w$ 收敛缓慢。</p>
+<p>也就是说，当输入数据的尺度不合适时，$w$ 和 $b$ 可能需要不同量级的更新步长，而普通梯度下降通常只使用一个统一的学习率，因此难以同时兼顾二者。</p>
+<h2 id="对输入进行标准化"><a href="#对输入进行标准化" class="headerlink" title="对输入进行标准化"></a>对输入进行标准化</h2><p>一种常见的解决方案是对输入数据进行标准化：</p>
+<p>$$<br>x_{i}^{\text{norm}} &#x3D;<br>\frac{x_{i}-\mu_{x}}{\sigma_{x}}<br>$$</p>
+<p>其中：</p>
+<p>$$<br>\mu_{x} &#x3D;<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}x_{i}<br>$$</p>
+<p>$$<br>\sigma_{x} &#x3D;<br>\sqrt{<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}<br>(x_{i}-\mu_{x})^2<br>}<br>$$</p>
+<p>经过标准化后，输入数据的均值为 $0$，标准差为 $1$：</p>
+<p>$$<br>\operatorname{mean}(x^{\text{norm}})&#x3D;0<br>$$</p>
+<p>$$<br>\operatorname{std}(x^{\text{norm}})&#x3D;1<br>$$</p>
+<p>这里需要注意，标准化并不保证数据一定落在某个固定的小区间内，而是将数据调整到相对稳定的尺度。</p>
+<p>此时模型变为：</p>
+<p>$$<br>\hat{y}_{i} &#x3D; w^{\prime}x_{i}^{\text{norm}}+b^{\prime}<br>$$</p>
+<p>由于 $x_{i}^{\text{norm}}$ 的尺度更加适中，$w^{\prime}$ 的梯度不容易因为输入尺度过大或过小而失衡，因此训练通常会更加稳定，也更容易选择合适的学习率。</p>
+<p>同时，因为标准化后的输入均值为 $0$，模型中的 $w^{\prime}$ 和 $b^{\prime}$ 也会更加容易独立地进行优化。</p>
+<h2 id="转换回原始输入空间"><a href="#转换回原始输入空间" class="headerlink" title="转换回原始输入空间"></a>转换回原始输入空间</h2><p>标准化后的参数 $w^{\prime}$ 和 $b^{\prime}$ 是针对 $x^{\text{norm}}$ 的。如果需要，可以将它们转换为针对原始输入 $x$ 的参数。</p>
+<p>由</p>
+<p>$$<br>\hat{y} &#x3D; w^{\prime}\frac{x-\mu_{x}}{\sigma_{x}}+b^{\prime}<br>$$</p>
+<p>展开可得：</p>
+<p>$$<br>\hat{y} &#x3D;<br>\frac{w^{\prime}}{\sigma_{x}}x<br>+<br>\left(<br>b^{\prime}-\frac{w^{\prime}\mu_{x}}{\sigma_{x}}<br>\right)<br>$$</p>
+<p>因此，原始输入空间中的参数为：</p>
+<p>$$<br>w&#x3D;\frac{w^{\prime}}{\sigma_{x}}<br>$$</p>
+<p>$$<br>b&#x3D;b^{\prime}-\frac{w^{\prime}\mu_{x}}{\sigma_{x}}<br>$$</p>
+<p>可见，标准化只是改变了参数的表示方式，并没有改变线性模型能够表示的函数。</p>
+<h2 id="推广到多维输入"><a href="#推广到多维输入" class="headerlink" title="推广到多维输入"></a>推广到多维输入</h2><p>对于多元线性回归：</p>
+<p>$$<br>\hat{y} &#x3D; \sum_{j&#x3D;1}^{d}w_{j}x_{j}+b<br>$$</p>
+<p>每个权重 $w_{j}$ 的梯度都会受到对应特征 $x_{j}$ 的影响：</p>
+<p>$$<br>\frac{\partial L}{\partial w_{j}} &#x3D;<br>\frac{1}{N}<br>\sum_{i&#x3D;1}^{N}<br>(\hat{y}_{i}-y_{i})x_{ij}<br>$$</p>
+<p>如果不同特征的尺度差异很大，例如一个特征的取值范围是 $0\sim 1$，另一个特征的取值范围是几万，那么不同权重的梯度尺度也会相差很大。</p>
+<p>因此，通常需要分别对每个特征进行标准化：</p>
+<p>$$<br>x_{ij}^{\text{norm}} &#x3D;<br>\frac{x_{ij}-\mu_{j}}{\sigma_{j}}<br>$$</p>
+<p>使各个特征处于相近的尺度，从而让不同权重能够以更加协调的速度更新。</p>
+<h2 id="推广到神经网络"><a href="#推广到神经网络" class="headerlink" title="推广到神经网络"></a>推广到神经网络</h2><p>类似的问题也存在于神经网络中。</p>
+<p>神经网络每一层都可以看作对上一层输出进行新的变换。如果某一层输出的尺度过大或过小，就可能影响下一层的激活值和梯度，使训练变得不稳定。</p>
+<p>因此，神经网络中除了会对输入数据进行标准化，还经常使用归一化层来控制中间特征的尺度，例如：</p>
 <ul>
-<li><code>PreToolUse</code></li>
-<li><code>PostToolUse</code></li>
-<li><code>Stop</code></li>
+<li>Batch Normalization；</li>
+<li>Layer Normalization；</li>
+<li>Group Normalization；</li>
+<li>RMSNorm。</li>
 </ul>
-<p>这样可以在不侵入核心 Agent Loop 的情况下扩展各种处理逻辑。</p>
-<h3 id="s05：Todo-List"><a href="#s05：Todo-List" class="headerlink" title="s05：Todo List"></a>s05：Todo List</h3><p>加入待办事项列表。</p>
-<p>本质上是维护一份由 LLM 自己生成和更新的任务列表，帮助模型记录任务步骤及当前进度。</p>
-<h3 id="s06：Sub-agent"><a href="#s06：Sub-agent" class="headerlink" title="s06：Sub-agent"></a>s06：Sub-agent</h3><p>加入子 Agent。</p>
-<p>除了不与主 Agent 共享上下文、不能继续创建子 Agent 之外，子 Agent 的能力与主 Agent 基本一致。</p>
-<p>值得注意的是，<strong>Todo List 和 Sub-agent 都是以 Tool 的形式提供给模型的</strong>。</p>
-<h3 id="s07：Skill-加载"><a href="#s07：Skill-加载" class="headerlink" title="s07：Skill 加载"></a>s07：Skill 加载</h3><p>引入 Skill 机制。</p>
-<p>它的本质是将“启动时加载全部上下文”改为“按需加载上下文”。系统需要通过一个 Skill Loader 扫描指定目录，整理出可用的 Skill 列表，并在启动时将这份列表提供给 LLM。</p>
-<p>模型需要使用某项能力时，再加载对应 Skill 的详细内容，从而减少初始上下文占用。</p>
-<h3 id="s08：上下文压缩"><a href="#s08：上下文压缩" class="headerlink" title="s08：上下文压缩"></a>s08：上下文压缩</h3><p>上下文通常主要被大量工具调用结果占用，因此压缩策略会优先处理工具输出。</p>
-<p>每轮对话会依次进行多层压缩：</p>
-<ol>
-<li>当工具调用结果的总大小超过阈值时，将体积最大的结果写入本地文件，上下文中只保留索引；</li>
-<li>当消息数量超过阈值时，只保留头部和尾部消息的完整内容，中间消息替换为索引；</li>
-<li>仅保留最近 3 条消息的完整内容，其余消息显示为占位符；已经落盘的内容继续保留文件路径。</li>
-</ol>
-<p>如果经过上述处理后，上下文仍然超过阈值，才会调用 LLM 对历史内容生成摘要，并用摘要替换此前的上下文。</p>
-<p>与此同时，完整的历史消息仍会写入本地文件，避免信息永久丢失。</p>
-<h3 id="s09：记忆机制"><a href="#s09：记忆机制" class="headerlink" title="s09：记忆机制"></a>s09：记忆机制</h3><p>实现记忆的存储、召回、提取和整理。</p>
-<p>它解决的问题与 s07 类似：每次开启新会话时，不必一次性加载全部历史上下文。</p>
-<p>在对话过程中，模型会定期从上下文中提取值得长期保留的信息，并写入 <code>.memory/*.md</code> 文件。下一次开启会话时，系统只会将 <code>MEMORY.md</code> 记忆索引加入 System Prompt，由模型根据需要加载具体记忆。</p>
-<p>主要包含以下四类记忆：</p>
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>保存内容</th>
-<th>示例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>user</code></td>
-<td>用户的长期偏好</td>
-<td>“使用 Tab 缩进”</td>
-</tr>
-<tr>
-<td><code>feedback</code></td>
-<td>后续仍然适用的工作反馈</td>
-<td>“不要 Mock 数据库”</td>
-</tr>
-<tr>
-<td><code>project</code></td>
-<td>相对稳定的项目事实</td>
-<td>“认证模块重写是由合规要求驱动的”</td>
-</tr>
-<tr>
-<td><code>reference</code></td>
-<td>外部资料或信息查找线索</td>
-<td>“流水线问题记录在 Linear 的 INGEST 项目中”</td>
-</tr>
-</tbody></table>
-<h3 id="s10：Task-机制"><a href="#s10：Task-机制" class="headerlink" title="s10：Task 机制"></a>s10：Task 机制</h3><p>加入 Task 机制。</p>
-<p>它与 s05 中 Todo List 的区别在于：Task 的抽象层次更高，而且能够跨会话保存。</p>
-<p>系统需要通过 <code>.task/*.json</code> 文件持久化维护任务状态；Todo List 更偏向单次执行过程中的步骤管理，而 Task 更接近长期任务或项目级工作的管理机制。</p>
-<h3 id="后续章节"><a href="#后续章节" class="headerlink" title="后续章节"></a>后续章节</h3><p>后续几个章节主要介绍：</p>
-<ul>
-<li>定时任务；</li>
-<li>Multi-agent 协作；</li>
-<li>MCP，即外部工具和服务的接入。</li>
-</ul>
+<p>这些方法的具体归一化维度不同，但基本目的相似：让网络中间特征保持相对稳定的尺度，使不同层的参数更容易使用统一的学习率进行优化。</p>
+<p>不过神经网络中的归一化层并不只是简单的输入标准化。它们通常还会加入可学习的缩放和平移参数，使网络在获得稳定数值尺度的同时，仍然能够学习适合当前任务的特征分布。</p>
 
                 
               </div>
@@ -430,8 +406,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Agent系统学习日志-3</div>
-      <div>https://nnnut-zhou.github.io/2026/08/16/Agent系统学习日志-3/</div>
+      <div>从线性回归看Normalization</div>
+      <div>https://nnnut-zhou.github.io/2026/08/23/Deep-Learning入门-从线性回归看Normalization/</div>
     </div>
     <div class="license-meta">
       
@@ -443,7 +419,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2026年8月16日</div>
+          <div>2026年8月23日</div>
         </div>
       
       
@@ -475,18 +451,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/08/23/Deep-Learning%E5%85%A5%E9%97%A8-%E4%BB%8E%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%9C%8BNormalization/" title="从线性回归看Normalization">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">从线性回归看Normalization</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/08/14/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-2/" title="Agent系统学习日志-2">
-                        <span class="hidden-mobile">Agent系统学习日志-2</span>
+                      <a href="/2026/08/16/Agent%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97-3/" title="Agent系统学习日志-3">
+                        <span class="hidden-mobile">Agent系统学习日志-3</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -543,6 +513,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -799,6 +775,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
